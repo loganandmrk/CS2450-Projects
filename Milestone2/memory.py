@@ -1,0 +1,12 @@
+import functions
+
+#creates a dictionary with keys from 00 to 99 and sets values to None
+keys_tuple = tuple(f"{i:02d}" for i in range(100))
+memory_dict = dict.fromkeys(keys_tuple, None)
+
+#defines memory as a class with an init function that initializes the memory attribute to the memory_dict created above
+class Memory:
+    def __init__(self):
+        self.memory = memory_dict
+
+    #define class functions here we can use the functions.py folder to pull from
