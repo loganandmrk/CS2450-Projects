@@ -17,8 +17,8 @@ def main():
             
 
 
-        #prints the Memory classes memory attribute. Use Memory().memory to access the dictionary.
-        #print(Memory().memory)
+        #Use Memory().memory to access the dictionary.
+        #i.e. print(Memory().memory)
 
 if __name__ == "__main__":
     main()
