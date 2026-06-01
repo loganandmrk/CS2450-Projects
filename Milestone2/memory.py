@@ -11,5 +11,3 @@ class Memory:
         self.memory = memory_dict
 
     #define class functions here. we can use the functions.py folder to pull from if needed.
-    def hello():
-        print("hello world")
