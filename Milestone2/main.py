@@ -17,9 +17,10 @@ def main():
             sign = line[0] #sign of the instruction, either + or -
             instruction = line[1:3] #the 2 digit instruction of the program
             memory_loc = line[3:5] #the 2 digit memory location operations should be performed on
+            value = line[1:5]
 
             #writes memory with index as key number, then stores parsed info into memory of key using a list.
-            memory.write(index, [sign, instruction, memory_loc, line])
+            memory.write(index, [sign, int(instruction), int(memory_loc), int(value), line])
             #prints memory at index
             #print (memory.read(index))
             index += 1
@@ -63,25 +64,30 @@ def main():
                 #MULTIPLY
                 pass
             case 40:
-                program_counter = memory.read(program_counter)[2] 
-                continue
                 #BRANCH
+                program_counter = int(memory.read(program_counter)[2])
+                continue
+                
             case 41:
-                if memory.acumulator < 0:
-                    program_counter = memory.read(program_counter)[2]
-                    continue 
                 #BRANCHNEG
+                if memory.acumulator < 0:
+                    program_counter = int(memory.read(program_counter)[2])
+                    continue 
+                
             case 42:
-                if memory.acumulator == 0:
-                    program_counter = memory.read(program_counter)[2]
-                    continue
                 #BRANCHZERO
+                if memory.acumulator == 0:
+                    program_counter = int(memory.read(program_counter)[2])
+                    continue
+                
             case 43:
+                #HALT
                 run = False
                 break
-                #HALT
-                '''case _:
-                print("Invalid instruction")'''
+                
+            case _:
+                print("Invalid instruction")
+
         program_counter += 1
 
 if __name__ == "__main__":
