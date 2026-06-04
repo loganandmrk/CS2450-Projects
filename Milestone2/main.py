@@ -41,7 +41,7 @@ def main():
         match opcode:
             case 10:
                 #READ
-                pass
+                memory.read(int(memory.read_inst(program_counter)[2]))
             case 11:
                 #WRITE
                 pass

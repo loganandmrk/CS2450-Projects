@@ -1,3 +1,4 @@
+from Milestone2.CS2450_project import WORD_MAX, WORD_MIN
 import functions
 
 #creates a dictionary with keys from 00 to 99 and sets values to None
@@ -10,6 +11,9 @@ class Memory:
     def __init__(self):
         self.memory = memory_dict
         self.acumulator = 0
+        self.MEMORY_SIZE = 100
+        self.WORD_MIN = -9999
+        self.WORD_MAX = 9999
 
     def write_inst(self, address, value):
         # Forces integer addresses into the "00" string format
@@ -21,3 +25,19 @@ class Memory:
         if isinstance(address, int):
             address = f"{address:02d}"
         return self.memory[address]
+    
+    def read(self, address):
+        if address < 0 or address >= self.MEMORY_SIZE:
+            raise ValueError("Address " + str(address) + " is not valid")
+
+        user_input = input("Enter a word for memory location " + str(address) + ": ")
+        
+        try:
+            value = int(user_input)
+        except:
+            raise ValueError(str(user_input) + " is not a valid number")
+        
+        if value < self.WORD_MIN or value > self.WORD_MAX:
+            raise OverflowError(str(value) + " is out of range")
+        
+        self.memory[address] = value
