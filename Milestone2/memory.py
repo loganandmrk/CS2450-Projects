@@ -10,6 +10,9 @@ class Memory:
     def __init__(self):
         self.memory = memory_dict
         self.acumulator = 0
+        self.memory_size = 100
+        self.word_min = -999
+        self.word_max = 9999
 
     def write_inst(self, address, value):
         # Forces integer addresses into the "00" string format
@@ -21,3 +24,44 @@ class Memory:
         if isinstance(address, int):
             address = f"{address:02d}"
         return self.memory[address]
+    
+    def read(self, address):
+        if int(address) < 0 or int(address) >= self.memory_size:
+            raise ValueError("Address " + str(address) + " is not valid")
+        user_input = input("Enter a word for memory location " + str(address) + ": ")
+
+        try:
+            value = int(user_input)
+        except:
+            raise ValueError(str(user_input) + " is not a valid number")
+        
+        if value < self.word_min or value > self.word_max:
+            raise OverflowError(str(value) + " is out of range")
+        
+        self.memory[address] = value
+    
+    def write(self, address):
+        if int(address) < 0 or int(address) >= self.memory_size:
+            raise ValueError("Address " + str(address) + " is not valid")
+        
+        value = self.memory[address]
+        
+        if value < 0:
+            print("-" + str(abs(value)).zfill(3))
+        else:
+            print(str(value).zfill(4))
+
+    def load(self, address):
+        if int(address) < 0 or int(address) >= self.memory_size:
+            raise ValueError("Address " + str(address) + " is not valid")
+        
+        self.acumulator = self.memory[address]
+    
+    def store(self, address):
+        if int(address) < 0 or int(address) >= self.memory_size:
+            raise ValueError("Address " + str(address) + " is not valid")
+        
+        if self.acumulator < self.word_min or self.acumulator > self.word_max:
+            raise OverflowError("Accumulator value is out of range")
+        
+        self.memory[address] = self.acumulator
