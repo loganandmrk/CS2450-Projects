@@ -24,6 +24,50 @@ def main():
             print (memory.read(index))
             index += 1
 
+            #idea for a case tree
+            """memory.memory[memory_loc] = sign + instruction
+            #case tree for instructions should go here
+            match memory.memory[memory_loc][1:3]:
+                case "10":
+                    #READ
+                    pass
+                case "11":
+                    #WRITE
+                    pass
+                case "20":
+                    #LOAD
+                    pass
+                case "21":
+                    #STORE
+                    pass
+                case "30":
+                    #ADD
+                    pass
+                case "31":
+                    #SUBTRACT
+                    pass
+                case "32":
+                    #DIVIDE
+                    pass
+                case "33":
+                    #MULTIPLY
+                    pass
+                case "40":
+                    #BRANCH
+                    pass
+                case "41":
+                    #use memory.memory[memory_loc][0] to access the sign
+                    #BRANCHNEG
+                    pass
+                case "42":
+                    #BRANCHZERO
+                    pass
+                case "43":
+                    #HALT
+                    pass
+                case _:
+                    print("Invalid instruction")"""
+
         
     
     
