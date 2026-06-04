@@ -29,6 +29,58 @@ def main():
     
         #Use Memory().memory to access the dictionary.
         #print(Memory().memory)
+    program_counter = 100
+    run = True
+    opcode = memory.read(program_counter)[1]
+    while run:
+        if program_counter > 99:
+            opcode=43
+        match opcode:
+            case 10:
+                #READ
+                pass
+            case 11:
+                #WRITE
+                pass
+            case 20:
+                #LOAD
+                pass
+            case 21:
+                #STORE
+                pass
+            case 30:
+                #ADD
+                pass
+            case 31:
+                #SUBTRACT
+                pass
+            case 32:
+                #DIVIDE
+                pass
+            case 33:
+                #MULTIPLY
+                pass
+            case 40:
+                program_counter = memory.read(program_counter)[2] 
+                continue
+                #BRANCH
+            case 41:
+                if memory.acumulator < 0:
+                    program_counter = memory.read(program_counter)[2]
+                continue 
+                #BRANCHNEG
+            case 42:
+                if memory.acumulator == 0:
+                    program_counter = memory.read(program_counter)[2]
+                continue
+                #BRANCHZERO
+            case 43:
+                run = False
+                continue
+                #HALT
+            case _:
+                print("Invalid instruction")
+        program_counter += 1
 
 if __name__ == "__main__":
     main()

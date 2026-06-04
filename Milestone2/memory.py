@@ -9,6 +9,7 @@ memory_dict = dict.fromkeys(keys_tuple, None)
 class Memory:
     def __init__(self):
         self.memory = memory_dict
+        self.acumulator = 0
 
     def write(self, address, value):
         # Forces integer addresses into the "00" string format
