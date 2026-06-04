@@ -1,4 +1,3 @@
-from Milestone2.CS2450_project import WORD_MAX, WORD_MIN
 import functions
 
 #creates a dictionary with keys from 00 to 99 and sets values to None
@@ -11,9 +10,9 @@ class Memory:
     def __init__(self):
         self.memory = memory_dict
         self.acumulator = 0
-        self.MEMORY_SIZE = 100
-        self.WORD_MIN = -9999
-        self.WORD_MAX = 9999
+        self.memory_size = 100
+        self.word_min = -999
+        self.word_max = 9999
 
     def write_inst(self, address, value):
         # Forces integer addresses into the "00" string format
@@ -27,17 +26,42 @@ class Memory:
         return self.memory[address]
     
     def read(self, address):
-        if address < 0 or address >= self.MEMORY_SIZE:
+        if int(address) < 0 or int(address) >= self.memory_size:
             raise ValueError("Address " + str(address) + " is not valid")
-
         user_input = input("Enter a word for memory location " + str(address) + ": ")
-        
+
         try:
             value = int(user_input)
         except:
             raise ValueError(str(user_input) + " is not a valid number")
         
-        if value < self.WORD_MIN or value > self.WORD_MAX:
+        if value < self.word_min or value > self.word_max:
             raise OverflowError(str(value) + " is out of range")
         
         self.memory[address] = value
+    
+    def write(self, address):
+        if int(address) < 0 or int(address) >= self.memory_size:
+            raise ValueError("Address " + str(address) + " is not valid")
+        
+        value = self.memory[address]
+        
+        if value < 0:
+            print("-" + str(abs(value)).zfill(3))
+        else:
+            print(str(value).zfill(4))
+
+    def load(self, address):
+        if int(address) < 0 or int(address) >= self.memory_size:
+            raise ValueError("Address " + str(address) + " is not valid")
+        
+        self.acumulator = self.memory[address]
+    
+    def store(self, address):
+        if int(address) < 0 or int(address) >= self.memory_size:
+            raise ValueError("Address " + str(address) + " is not valid")
+        
+        if self.acumulator < self.word_min or self.acumulator > self.word_max:
+            raise OverflowError("Accumulator value is out of range")
+        
+        self.memory[address] = self.acumulator

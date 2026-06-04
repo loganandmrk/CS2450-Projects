@@ -20,37 +20,33 @@ def main():
             value = line[1:5]
 
             #writes memory with index as key number, then stores parsed info into memory of key using a list.
-            memory.write(index, [sign, int(instruction), int(memory_loc), int(value), line])
+            memory.write_inst(index, [sign, int(instruction), str(memory_loc), int(value), line])
             #prints memory at index
             #print (memory.read(index))
             index += 1
 
-        
-    
-    
-        #Use Memory().memory to access the dictionary.
-        #print(Memory().memory)
+
     program_counter = 0
     run = True
 
     while run:
-        print(f"Current PC: {program_counter}, Read Result: {memory.read_inst(program_counter)}")
+        #print(f"Current PC: {program_counter}, Read Result: {memory.read_inst(program_counter)}")
         opcode = int(memory.read_inst(program_counter)[1])
         if program_counter > 99:
             opcode=43
         match opcode:
             case 10:
                 #READ
-                memory.read(int(memory.read_inst(program_counter)[2]))
+                memory.read(memory.read_inst(program_counter)[2])
             case 11:
                 #WRITE
-                pass
+                memory.write(memory.read_inst(program_counter)[2])
             case 20:
                 #LOAD
-                pass
+                memory.load(memory.read_inst(program_counter)[2])
             case 21:
                 #STORE
-                pass
+                memory.store(memory.read_inst(program_counter)[2])
             case 30:
                 #ADD
                 pass
