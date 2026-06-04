@@ -34,8 +34,8 @@ def main():
     run = True
 
     while run:
-        print(f"Current PC: {program_counter}, Read Result: {memory.read(program_counter)}")
-        opcode = int(memory.read(program_counter)[1])
+        print(f"Current PC: {program_counter}, Read Result: {memory.read_inst(program_counter)}")
+        opcode = int(memory.read_inst(program_counter)[1])
         if program_counter > 99:
             opcode=43
         match opcode:
@@ -65,19 +65,19 @@ def main():
                 pass
             case 40:
                 #BRANCH
-                program_counter = int(memory.read(program_counter)[2])
+                program_counter = int(memory.read_inst(program_counter)[2])
                 continue
                 
             case 41:
                 #BRANCHNEG
                 if memory.acumulator < 0:
-                    program_counter = int(memory.read(program_counter)[2])
+                    program_counter = int(memory.read_inst(program_counter)[2])
                     continue 
                 
             case 42:
                 #BRANCHZERO
                 if memory.acumulator == 0:
-                    program_counter = int(memory.read(program_counter)[2])
+                    program_counter = int(memory.read_inst(program_counter)[2])
                     continue
                 
             case 43:

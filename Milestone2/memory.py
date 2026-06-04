@@ -11,13 +11,13 @@ class Memory:
         self.memory = memory_dict
         self.acumulator = 0
 
-    def write(self, address, value):
+    def write_inst(self, address, value):
         # Forces integer addresses into the "00" string format
         if isinstance(address, int):
             address = f"{address:02d}"
         self.memory[address] = value
 
-    def read(self, address):
+    def read_inst(self, address):
         if isinstance(address, int):
             address = f"{address:02d}"
         return self.memory[address]
