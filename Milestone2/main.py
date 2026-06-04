@@ -18,17 +18,49 @@ def main():
             instruction = line[1:3] #the 2 digit instruction of the program
             memory_loc = line[3:5] #the 2 digit memory location operations should be performed on
 
-            #writes memory with index as key number, then stores parsed info into memory of key using a list.
-            memory.write(index, [sign, instruction, memory_loc, line])
-            #prints memory at index
-            print (memory.read(index))
-            index += 1
-
-        
-    
-    
-        #Use Memory().memory to access the dictionary.
-        #print(Memory().memory)
+            #initialize memory values based on input file.
+            memory.memory[memory_loc] = sign + instruction
+            #case tree for instructions should go here
+            match memory.memory[memory_loc][1:3]:
+                case "10":
+                    #READ
+                    pass
+                case "11":
+                    #WRITE
+                    pass
+                case "20":
+                    #LOAD
+                    pass
+                case "21":
+                    #STORE
+                    pass
+                case "30":
+                    #ADD
+                    pass
+                case "31":
+                    #SUBTRACT
+                    pass
+                case "32":
+                    #DIVIDE
+                    pass
+                case "33":
+                    #MULTIPLY
+                    pass
+                case "40":
+                    #BRANCH
+                    pass
+                case "41":
+                    #use memory.memory[memory_loc][0] to access the sign
+                    #BRANCHNEG
+                    pass
+                case "42":
+                    #BRANCHZERO
+                    pass
+                case "43":
+                    #HALT
+                    pass
+                case _:
+                    print("Invalid instruction")
 
 if __name__ == "__main__":
     main()
