@@ -17,9 +17,15 @@ def main():
             memory_loc = line[3:5] #the 2 digit memory location operations should be performed on
 
 
-            #created load and store functions and provided an example of how to use them.
-            memory.store(memory_loc, instruction)
-            print(memory.load(memory_loc))
+            #created load and store functions and provided an
+            memory.write(memory_loc, instruction)
+            print(memory.read(memory_loc))
+
+            
+
+
+        #Use Memory().memory to access the dictionary.
+        #i.e. print(Memory().memory)
 
 if __name__ == "__main__":
     main()
