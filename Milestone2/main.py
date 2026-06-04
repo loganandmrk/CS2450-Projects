@@ -29,7 +29,7 @@ def main():
     
         #Use Memory().memory to access the dictionary.
         #print(Memory().memory)
-    program_counter = 100
+    program_counter = 00
     run = True
     opcode = memory.read(program_counter)[1]
     while run:
