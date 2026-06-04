@@ -61,6 +61,7 @@ def main():
                     pass
                 case _:
                     print("Invalid instruction")
+                    
 
 if __name__ == "__main__":
     main()
