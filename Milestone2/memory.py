@@ -11,3 +11,8 @@ class Memory:
         self.memory = memory_dict
 
     #define class functions here. we can use the functions.py folder to pull from if needed.
+    def store(self, address, value):
+        self.memory[address] = value
+
+    def load(self, address):
+        return self.memory[address]
