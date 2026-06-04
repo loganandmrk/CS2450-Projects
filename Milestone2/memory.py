@@ -10,9 +10,13 @@ class Memory:
     def __init__(self):
         self.memory = memory_dict
 
-    #define class functions here. we can use the functions.py folder to pull from if needed.
     def write(self, address, value):
+        # Forces integer addresses into the "00" string format
+        if isinstance(address, int):
+            address = f"{address:02d}"
         self.memory[address] = value
 
     def read(self, address):
+        if isinstance(address, int):
+            address = f"{address:02d}"
         return self.memory[address]
