@@ -21,12 +21,5 @@ def main():
             memory.store(memory_loc, instruction)
             print(memory.load(memory_loc))
 
-
-            
-
-
-        #Use Memory().memory to access the dictionary.
-        #i.e. print(Memory().memory)
-
 if __name__ == "__main__":
     main()
