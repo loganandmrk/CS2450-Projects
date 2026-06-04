@@ -21,7 +21,7 @@ def main():
             #writes memory with index as key number, then stores parsed info into memory of key using a list.
             memory.write(index, [sign, instruction, memory_loc, line])
             #prints memory at index
-            print (memory.read(index))
+            #print (memory.read(index))
             index += 1
 
         
@@ -29,10 +29,12 @@ def main():
     
         #Use Memory().memory to access the dictionary.
         #print(Memory().memory)
-    program_counter = 00
+    program_counter = 0
     run = True
-    opcode = memory.read(program_counter)[1]
+
     while run:
+        print(f"Current PC: {program_counter}, Read Result: {memory.read(program_counter)}")
+        opcode = int(memory.read(program_counter)[1])
         if program_counter > 99:
             opcode=43
         match opcode:
@@ -67,19 +69,19 @@ def main():
             case 41:
                 if memory.acumulator < 0:
                     program_counter = memory.read(program_counter)[2]
-                continue 
+                    continue 
                 #BRANCHNEG
             case 42:
                 if memory.acumulator == 0:
                     program_counter = memory.read(program_counter)[2]
-                continue
+                    continue
                 #BRANCHZERO
             case 43:
                 run = False
-                continue
+                break
                 #HALT
-            case _:
-                print("Invalid instruction")
+                '''case _:
+                print("Invalid instruction")'''
         program_counter += 1
 
 if __name__ == "__main__":
