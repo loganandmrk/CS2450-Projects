@@ -65,3 +65,37 @@ class Memory:
             raise OverflowError("Accumulator value is out of range")
         
         self.memory[address] = self.acumulator
+    
+    def add(self, address):
+        if int(address) < 0 or int(address) >= self.memory_size:
+            raise ValueError("Address " + str(address) + " is not valid")
+        value = self.memory[address]
+        if value is None:
+            raise ValueError("Memory location " + str(address) + " is empty")
+        self.acumulator = self.acumulator + value
+
+    def subtract(self, address):
+        if int(address) < 0 or int(address) >= self.memory_size:
+            raise ValueError("Address " + str(address) + " is not valid")
+        value = self.memory[address]
+        if value is None:
+            raise ValueError("Memory location " + str(address) + " is empty")
+        self.acumulator = self.acumulator - value
+
+    def multiply(self, address):
+        if int(address) < 0 or int(address) >= self.memory_size:
+            raise ValueError("Address " + str(address) + " is not valid")
+        value = self.memory[address]
+        if value is None:
+            raise ValueError("Memory location " + str(address) + " is empty")
+        self.acumulator = self.acumulator * value
+
+    def divide(self, address):
+        if int(address) < 0 or int(address) >= self.memory_size:
+            raise ValueError("Address " + str(address) + " is not valid")
+        value = self.memory[address]
+        if value is None:
+            raise ValueError("Memory location " + str(address) + " is empty")
+        if value == 0:
+            raise ValueError("Cannot divide by zero")
+        self.acumulator = int(self.acumulator / value)
