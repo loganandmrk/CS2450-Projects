@@ -6,7 +6,7 @@ Use this bit of code as a template:
 ```bash
 python Milestone2/main.py Milestone2/<filename>
 ```
-"filename" should be replaced by your test file. We have provided test files labeled "Test1.txt" and "Test2.txt" to verify the program is working.
+"filename" should be replaced by your test file. We have provided test files labeled "Test1.txt" through "Test5.txt" to verify the program is working.
 
 In order to fully understand the functions of the program we have outlined what each instruction does:
 
