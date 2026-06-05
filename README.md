@@ -9,6 +9,7 @@ python Milestone2/main.py Milestone2/<filename>
 "filename" should be replaced by your test file. We have provided test files labeled "Test1.txt" and "Test2.txt" to verify the program is working.
 
 In order to fully understand the functions of the program we have outlined what each instruction does:
+
     I/O operation:
         READ = 10 Read a word from the keyboard into a specific location in memory.
         WRITE = 11 Write a word from a specific location in memory to screen.
