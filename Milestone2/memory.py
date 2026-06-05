@@ -9,8 +9,15 @@ class Memory:
         self.memory = memory_dict
         self.acumulator = 0
         self.memory_size = 100
-        self.word_min = -999
+        self.word_min = -9999
         self.word_max = 9999
+
+    def value_finder(self, address):
+        if isinstance(self.memory[address], list):
+            value = int(self.memory[address][4])
+        else:
+            value = self.memory[address]
+        return value
 
     def write_inst(self, address, value):
         # Forces integer addresses into the "00" string format
@@ -42,7 +49,7 @@ class Memory:
         if int(address) < 0 or int(address) >= self.memory_size:
             raise ValueError("Address " + str(address) + " is not valid")
         
-        value = self.memory[address]
+        value = self.value_finder(address)
         
         if value < 0:
             print("-" + str(abs(value)).zfill(3))
@@ -53,7 +60,9 @@ class Memory:
         if int(address) < 0 or int(address) >= self.memory_size:
             raise ValueError("Address " + str(address) + " is not valid")
         
-        self.acumulator = self.memory[address]
+        #added checker to make sure if the memory was already parsed that it gets the correct info loaded to accumulator.
+        value = self.value_finder(address)
+        self.acumulator = value
     
     def store(self, address):
         if int(address) < 0 or int(address) >= self.memory_size:
@@ -67,7 +76,7 @@ class Memory:
     def add(self, address):
         if int(address) < 0 or int(address) >= self.memory_size:
             raise ValueError("Address " + str(address) + " is not valid")
-        value = self.memory[address]
+        value = self.value_finder(address)
         if value is None:
             raise ValueError("Memory location " + str(address) + " is empty")
         self.acumulator = self.acumulator + value
@@ -75,7 +84,7 @@ class Memory:
     def subtract(self, address):
         if int(address) < 0 or int(address) >= self.memory_size:
             raise ValueError("Address " + str(address) + " is not valid")
-        value = self.memory[address]
+        value = self.value_finder(address)
         if value is None:
             raise ValueError("Memory location " + str(address) + " is empty")
         self.acumulator = self.acumulator - value
@@ -83,7 +92,7 @@ class Memory:
     def multiply(self, address):
         if int(address) < 0 or int(address) >= self.memory_size:
             raise ValueError("Address " + str(address) + " is not valid")
-        value = self.memory[address]
+        value = self.value_finder(address)
         if value is None:
             raise ValueError("Memory location " + str(address) + " is empty")
         self.acumulator = self.acumulator * value
@@ -91,7 +100,7 @@ class Memory:
     def divide(self, address):
         if int(address) < 0 or int(address) >= self.memory_size:
             raise ValueError("Address " + str(address) + " is not valid")
-        value = self.memory[address]
+        value = self.value_finder(address)
         if value is None:
             raise ValueError("Memory location " + str(address) + " is empty")
         if value == 0:

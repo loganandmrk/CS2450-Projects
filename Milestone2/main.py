@@ -12,10 +12,8 @@ def main():
         lines = file.read().splitlines()
         memory = Memory()
         #Added Index for memory to be added in parsing
-        index= 00
-        memory = Memory()
-        #Added Index for memory to be added in parsing
-        index= 00
+        index= 0
+
         for line in lines:
             sign = line[0] #sign of the instruction, either + or -
             instruction = line[1:3] #the 2 digit instruction of the program
@@ -33,7 +31,8 @@ def main():
     run = True
 
     while run:
-        #print(f"Current PC: {program_counter}, Read Result: {memory.read_inst(program_counter)}")
+        print(f"Current PC: {program_counter}, Read Result: {memory.read_inst(program_counter)} Accumulator: {memory.acumulator}")
+        #print(memory.acumulator)
         opcode = int(memory.read_inst(program_counter)[1])
         if program_counter > 99:
             opcode=43
@@ -51,6 +50,7 @@ def main():
                 #STORE
                 memory.store(memory.read_inst(program_counter)[2])
             case 30:
+                #print(memory.read_inst(program_counter)[2])
                 memory.add(memory.read_inst(program_counter)[2])
             case 31:
                 memory.subtract(memory.read_inst(program_counter)[2])
@@ -59,7 +59,7 @@ def main():
                 memory.divide(memory.read_inst(program_counter)[2])
             case 33:
                 #MULTIPLY
-                memory.divide(memory.read_inst(program_counter)[2])
+                memory.multiply(memory.read_inst(program_counter)[2])
             case 40:
                 #BRANCH
                 program_counter = int(memory.read_inst(program_counter)[2])
