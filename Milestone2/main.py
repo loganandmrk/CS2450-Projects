@@ -13,6 +13,9 @@ def main():
         memory = Memory()
         #Added Index for memory to be added in parsing
         index= 00
+        memory = Memory()
+        #Added Index for memory to be added in parsing
+        index= 00
         for line in lines:
             sign = line[0] #sign of the instruction, either + or -
             instruction = line[1:3] #the 2 digit instruction of the program
@@ -48,17 +51,15 @@ def main():
                 #STORE
                 memory.store(memory.read_inst(program_counter)[2])
             case 30:
-                #ADD
-                pass
+                memory.add(memory.read_inst(program_counter)[2])
             case 31:
-                #SUBTRACT
-                pass
+                memory.subtract(memory.read_inst(program_counter)[2])
             case 32:
                 #DIVIDE
-                pass
+                memory.divide(memory.read_inst(program_counter)[2])
             case 33:
                 #MULTIPLY
-                pass
+                memory.divide(memory.read_inst(program_counter)[2])
             case 40:
                 #BRANCH
                 program_counter = int(memory.read_inst(program_counter)[2])
