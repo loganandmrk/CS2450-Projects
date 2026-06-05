@@ -13,6 +13,9 @@ def main():
         memory = Memory()
         #Added Index for memory to be added in parsing
         index= 00
+        memory = Memory()
+        #Added Index for memory to be added in parsing
+        index= 00
         for line in lines:
             sign = line[0] #sign of the instruction, either + or -
             instruction = line[1:3] #the 2 digit instruction of the program
