@@ -18,11 +18,10 @@ def main():
             sign = line[0] #sign of the instruction, either + or -
             instruction = line[1:3] #the 2 digit instruction of the program
             memory_loc = line[3:5] #the 2 digit memory location operations should be performed on
-            value = line[1:5]
+            value = line[1:5] #full integer
 
             #writes memory with index as key number, then stores parsed info into memory of key using a list.
             memory.write_inst(index, [sign, int(instruction), str(memory_loc), int(value), line])
-            #prints memory at index
             #print (memory.read(index))
             index += 1
 
