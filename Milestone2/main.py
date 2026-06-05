@@ -31,7 +31,7 @@ def main():
     run = True
 
     while run:
-        print(f"Current PC: {program_counter}, Read Result: {memory.read_inst(program_counter)} Accumulator: {memory.acumulator}")
+        #print(f"Current PC: {program_counter}, Read Result: {memory.read_inst(program_counter)} Accumulator: {memory.acumulator}")
         #print(memory.acumulator)
         opcode = int(memory.read_inst(program_counter)[1])
         if program_counter > 99:
@@ -84,7 +84,6 @@ def main():
                 
             case _:
                 print("Invalid instruction")
-
         program_counter += 1
 
 if __name__ == "__main__":
