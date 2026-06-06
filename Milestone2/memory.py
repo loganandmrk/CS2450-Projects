@@ -52,7 +52,7 @@ class Memory:
         value = self.value_finder(address)
         
         if value < 0:
-            print("-" + str(abs(value)).zfill(3))
+            print("-" + str(abs(value)).zfill(4))
         else:
             print(str(value).zfill(4))
 

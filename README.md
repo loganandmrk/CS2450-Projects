@@ -30,6 +30,8 @@ In order to fully understand the functions of the program we have outlined what 
         BRANCHZERO = 42 Branch to a specific location in memory if the accumulator is zero.
         HALT = 43 Stop the program
 
+To run unit tests please use this command: python -m unittest unit_tests
+
 Each program must contain a +4300 instruction to properly terminate the program.
 
 That should be everything, thanks for taking a look at our program!
