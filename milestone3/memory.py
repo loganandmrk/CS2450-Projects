@@ -18,6 +18,17 @@ class Memory:
         else:
             value = self.memory[address]
         return value
+    
+    def truncation_acc(self):
+        value = self.acumulator
+        if value > self.word_max or self.word_max:
+            if value < 0:
+                value %= -10000
+            if value > 0:
+                value %= 10000
+
+        self.acumulator = value
+        return self.acumulator
 
     def write_inst(self, address, value):
         # Forces integer addresses into the "00" string format
@@ -80,6 +91,7 @@ class Memory:
         if value is None:
             raise ValueError("Memory location " + str(address) + " is empty")
         self.acumulator = self.acumulator + value
+        self.truncation_acc()
 
     def subtract(self, address):
         if int(address) < 0 or int(address) >= self.memory_size:
@@ -88,6 +100,7 @@ class Memory:
         if value is None:
             raise ValueError("Memory location " + str(address) + " is empty")
         self.acumulator = self.acumulator - value
+        self.truncation_acc()
 
     def multiply(self, address):
         if int(address) < 0 or int(address) >= self.memory_size:
@@ -96,6 +109,7 @@ class Memory:
         if value is None:
             raise ValueError("Memory location " + str(address) + " is empty")
         self.acumulator = self.acumulator * value
+        self.truncation_acc()
 
     def divide(self, address):
         if int(address) < 0 or int(address) >= self.memory_size:
@@ -106,3 +120,5 @@ class Memory:
         if value == 0:
             raise ValueError("Cannot divide by zero")
         self.acumulator = int(self.acumulator / value)
+        self.truncation_acc()
+
