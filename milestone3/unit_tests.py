@@ -2,6 +2,7 @@ import unittest
 from unittest.mock import patch
 import io
 import main
+import memory
 import sys
 
 #Code written by Tyler, Implemented by Ryan
@@ -271,3 +272,35 @@ class TestHalt(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
+
+class TestTruncationAc(unittest.TestCase):
+
+    def test_truncation_within_bounds_positive(self):
+        mem = Memory()
+        mem.acumulator = -5000
+        mem.truncation_acc()
+        self.assertEqual(mem.acumulator, -5000)
+
+    def test_truncation_within_bound_negative(self):
+        mem = Memory()
+        mem.acumulator = 5000
+        mem.truncation_acc()
+        self.assertEqual(mem.acumulator, 5000)
+    
+    def test_truncation_outside_bounds_negative(self):
+        mem = Memory()
+        mem.acumulator = -10042
+        mem.truncation_acc()
+        self.assertEqual(mem.acumulator, -42)
+
+    def test_truncation_outside_bounds_positive(self):
+        mem = Memory()
+        mem.acumulator = 10042
+        mem.truncation_acc()
+        self.assertEqual(mem.acumulator, 42)
+    
+    def test_truncation_zero(self):
+        mem = Memory()
+        mem.acumulator = 0
+        mem.truncation_acc()
+        self.assertEqual(mem.acumulator, 0)
