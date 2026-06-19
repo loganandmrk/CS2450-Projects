@@ -21,7 +21,7 @@ class Memory:
     
     def truncation_acc(self):
         value = self.acumulator
-        if value > self.word_max or self.word_max:
+        if value > self.word_max or value < self.word_min:
             if value < 0:
                 value %= -10000
             if value > 0:
