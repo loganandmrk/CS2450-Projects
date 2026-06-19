@@ -109,7 +109,7 @@ class UVSimGUI:
                     self.memory.read(self.memory.read_inst(program_counter)[2], self.submit_input())
                 case 11:
                     #WRITE
-                    self.memory.write(self.memory.read_inst(program_counter)[2], self.log_output())
+                    self.memory.write(self.memory.read_inst(program_counter)[2], self.log_output(self.memory.write(self.memory.read_inst(program_counter)[2])))
                 case 20:
                     #LOAD
                     self.memory.load(self.memory.read_inst(program_counter)[2])
