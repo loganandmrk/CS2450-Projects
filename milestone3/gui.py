@@ -66,10 +66,8 @@ class UVSimGUI:
     def reset(self):
         self.memory = Memory()
         self.program_counter = 0
-        self.waiting_for_input = False
         self.btn_run.config(state=tk.NORMAL)
         self.btn_submit.config(state=tk.DISABLED)
-        self.output_text.delete(1.0, tk.END)
         self.log_output("System Reset")
         
     def log_output(self, msg):
@@ -103,24 +101,55 @@ class UVSimGUI:
                             self.log_output("Input value is out of range. Please enter a value between -9999 and 9999.")
                 case 11:
                     #WRITE
-                    self.memory.write(self.memory.read_inst(program_counter)[2], self.log_output(self.memory.write(self.memory.read_inst(program_counter)[2])))
+                    try:
+                        self.memory.write(self.memory.read_inst(program_counter)[2], self.log_output(self.memory.write(self.memory.read_inst(program_counter)[2])))
+                    except ValueError:
+                        self.log_output("Invalid memory address. Please check the program for errors.")
+                        self.reset()
                 case 20:
                     #LOAD
-                    self.memory.load(self.memory.read_inst(program_counter)[2])
+                    try:
+                        self.memory.load(self.memory.read_inst(program_counter)[2])
+                    except ValueError:
+                        self.log_output("Invalid memory address. Please check the program for errors.")
+                        self.reset()
                 case 21:
                     #STORE
-                    self.memory.store(self.memory.read_inst(program_counter)[2])
+                    try:
+                        self.memory.store(self.memory.read_inst(program_counter)[2])
+                    except ValueError:
+                        self.log_output("Invalid memory address. Please check the program for errors.")
+                        self.reset()
+                    except OverflowError:
+                        self.log_output("Accumulator or input value is out of range.")
+                        self.reset()
                 case 30:
                     #print(self.memory.read_inst(program_counter)[2])
-                    self.memory.add(self.memory.read_inst(program_counter)[2])
+                    try:
+                        self.memory.add(self.memory.read_inst(program_counter)[2])
+                    except ValueError:
+                        self.log_output("Invalid memory address. Please check the program for errors.")
+                        self.reset()
                 case 31:
-                    self.memory.subtract(self.memory.read_inst(program_counter)[2])
+                    try:
+                        self.memory.subtract(self.memory.read_inst(program_counter)[2])
+                    except ValueError:
+                        self.log_output("Invalid memory address. Please check the program for errors.")
+                        self.reset()
                 case 32:
                     #DIVIDE
-                    self.memory.divide(self.memory.read_inst(program_counter)[2])
+                    try:
+                        self.memory.divide(self.memory.read_inst(program_counter)[2])
+                    except ValueError:
+                        self.log_output("Invalid memory address. Please check the program for errors.")
+                        self.reset()
                 case 33:
                     #MULTIPLY
-                    self.memory.multiply(self.memory.read_inst(program_counter)[2])
+                    try:
+                        self.memory.multiply(self.memory.read_inst(program_counter)[2])
+                    except ValueError:
+                        self.log_output("Invalid memory address. Please check the program for errors.")
+                        self.reset()
                 case 40:
                     #BRANCH
                     program_counter = int(self.memory.read_inst(program_counter)[2])
