@@ -90,8 +90,8 @@ class UVSimGUI:
 
     def submit_input(self):
         input = simpledialog.askstring("Input", "Please enter a value:")
-        if input:
-            print("user entered: " + input)
+        input = int(input)
+        return input
 
     def run_program(self):
         program_counter = 0
