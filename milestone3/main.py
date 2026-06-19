@@ -23,7 +23,6 @@ def main():
         print("Too many arguments presented. Launching GUI empty.")
 
     root.mainloop()
-    index= 0
     """for line in UVSimGUI.submit_input():
         sign = line[0] #sign of the instruction, either + or -
         instruction = line[1:3] #the 2 digit instruction of the program

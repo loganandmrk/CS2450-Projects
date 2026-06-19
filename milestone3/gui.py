@@ -4,7 +4,6 @@ import tkinter as tk
 from tkinter import filedialog
 from tkinter import simpledialog
 from memory import Memory
-from milestone3 import memory
 
 class UVSimGUI:
     def __init__(self, root):
@@ -54,7 +53,17 @@ class UVSimGUI:
         if file_path:
             with open(file_path, 'r') as file:
                 lines = file.read().splitlines()
-                self.memory
+                index = 0
+                for line in lines:
+                    sign = line[0] #sign of the instruction, either + or -
+                    instruction = line[1:3] #the 2 digit instruction of the program
+                    memory_loc = line[3:5] #the 2 digit memory location operations should be performed on
+                    value = line[1:5] #full integer
+
+        #writes memory with index as key number, then stores parsed info into memory of key using a list.
+                    self.memory.write_inst(index, [sign, int(instruction), str(memory_loc), int(value), line])
+                    print(self.memory.read_inst(index))
+                    index += 1
 
     def load_file_from_path(self, filename):
         pass
