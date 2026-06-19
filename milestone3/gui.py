@@ -4,6 +4,7 @@ import tkinter as tk
 from tkinter import filedialog
 from tkinter import simpledialog
 from memory import Memory
+from pathlib import Path
 
 class UVSimGUI:
     def __init__(self, root):
@@ -40,13 +41,13 @@ class UVSimGUI:
         self.output_text = tk.Text(root, height=15, width=50)
         self.output_text.grid(row=2, column=0, columnspan=3, padx=5, pady=5, sticky=tk.NSEW)
 
-        # input row (below output)
+        '''# input row (below output)
         tk.Label(root, text="Please enter Input here:").grid(row=3, column=0, padx=5, pady=2, sticky=tk.EW)
         self.input_entry = tk.Entry(root)
         self.input_entry.grid(row=3, column=1, padx=5, pady=2, sticky=tk.EW)
 
         self.btn_submit = tk.Button(root, text="Submit Input", command=self.submit_input, state=tk.DISABLED)
-        self.btn_submit.grid(row=3, column=2, padx=5, pady=2, sticky=tk.EW)
+        self.btn_submit.grid(row=3, column=2, padx=5, pady=2, sticky=tk.EW)'''
 
     def load_file(self):
         file_path = filedialog.askopenfilename(title="Select UVSim Program", filetypes=[("Text Files", "*.txt")])
@@ -62,8 +63,8 @@ class UVSimGUI:
 
         #writes memory with index as key number, then stores parsed info into memory of key using a list.
                     self.memory.write_inst(index, [sign, int(instruction), str(memory_loc), int(value), line])
-                    print(self.memory.read_inst(index))
                     index += 1
+                self.log_output(f"Loaded {file_path}")
 
     def load_file_from_path(self, filename):
         try:
@@ -76,14 +77,18 @@ class UVSimGUI:
                     memory_loc = line[3:5]
                     value = line[1:5]
                     self.memory.write_inst(index, [sign, int(instruction), str(memory_loc), int(value), line])
-            print(f"Loaded {filename}")
+            self.log_output(f"Loaded {filename}")
         except:
-            print(f"No File Found")  
+            self.log_output(f"No File Found")  
 
     def reset(self):
         self.memory = Memory()
         self.program_counter = 0
-        self.waiting = False
+        self.waiting_for_input = False
+        self.btn_run.config(state=tk.NORMAL)
+        self.btn_submit.config(state=tk.DISABLED)
+        self.output_text.delete(1.0, tk.END)
+        self.log_output("System Reset")
         
     def log_output(self, msg):
         self.output_text.insert(tk.END, msg + "\n")
