@@ -66,18 +66,32 @@ class UVSimGUI:
                     index += 1
 
     def load_file_from_path(self, filename):
-        pass
+        try:
+            with open(filename, 'r') as file:
+                lines = file.read().splitlines()
+                for index, line in enumerate(lines):
+                    if not line: continue
+                    sign = line[0]
+                    instruction = line[1:3]
+                    memory_loc = line[3:5]
+                    value = line[1:5]
+                    self.memory.write_inst(index, [sign, int(instruction), str(memory_loc), int(value), line])
+            print(f"Loaded {filename}")
+        except:
+            print(f"No File Found")  
 
     def reset(self):
-        pass
+        self.memory = Memory()
+        self.program_counter = 0
+        self.waiting = False
         
     def log_output(self, msg):
-        pass
+        self.output_text.insert(tk.END, msg + "\n")
 
     def submit_input(self):
         input = simpledialog.askstring("Input", "Please enter a value:")
-        if input:
-            print("user entered: " + input)
+        input = int(input)
+        return input
 
     def run_program(self):
         program_counter = 0
@@ -95,7 +109,7 @@ class UVSimGUI:
                     self.memory.read(self.memory.read_inst(program_counter)[2], self.submit_input())
                 case 11:
                     #WRITE
-                    self.memory.write(self.memory.read_inst(program_counter)[2])
+                    self.memory.write(self.memory.read_inst(program_counter)[2], self.log_output(self.memory.write(self.memory.read_inst(program_counter)[2])))
                 case 20:
                     #LOAD
                     self.memory.load(self.memory.read_inst(program_counter)[2])
@@ -138,18 +152,3 @@ class UVSimGUI:
                 case _:
                     print("Invalid instruction")
             program_counter += 1
-
-
-"""def main():
-    root = tk.Tk()
-    app = UVSimGUI(root)
-    
-    if len(sys.argv) == 2:
-        app.load_file_from_path(sys.argv[1])
-    elif len(sys.argv) > 2:
-        print("Too many arguments presented. Launching GUI empty.")
-        
-    root.mainloop()
-
-if __name__ == "__main__":
-    main()"""
