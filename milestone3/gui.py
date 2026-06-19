@@ -63,7 +63,6 @@ class UVSimGUI:
         self.program_counter = 0
         self.waiting_for_input = False
         self.btn_run.config(state=tk.NORMAL)
-        self.btn_submit.config(state=tk.DISABLED)
         self.output_text.delete(1.0, tk.END)
         self.log_output("System Reset")
         
@@ -91,7 +90,7 @@ class UVSimGUI:
                     self.memory.read(self.memory.read_inst(program_counter)[2], self.submit_input())
                 case 11:
                     #WRITE
-                    self.memory.write(self.memory.read_inst(program_counter)[2], self.log_output(self.memory.write(self.memory.read_inst(program_counter)[2])))
+                    self.log_output(self.memory.write(self.memory.read_inst(program_counter)[2]))
                 case 20:
                     #LOAD
                     self.memory.load(self.memory.read_inst(program_counter)[2])
