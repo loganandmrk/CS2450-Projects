@@ -93,12 +93,14 @@ class UVSimGUI:
             match opcode:
                 case 10:
                     #READ
-                    try:
-                        self.memory.read(self.memory.read_inst(program_counter)[2], self.submit_input())
-                    except ValueError:
-                        self.log_output("Invalid input. Please enter a valid integer.")
-                    except OverflowError:
-                        self.log_output("Input value is out of range. Please enter a value between -9999 and 9999.")
+                    while True:
+                        try:
+                            self.memory.read(self.memory.read_inst(program_counter)[2], self.submit_input())
+                            break
+                        except ValueError:
+                            self.log_output("Invalid input. Please enter a valid integer.")
+                        except OverflowError:
+                            self.log_output("Input value is out of range. Please enter a value between -9999 and 9999.")
                 case 11:
                     #WRITE
                     self.memory.write(self.memory.read_inst(program_counter)[2], self.log_output(self.memory.write(self.memory.read_inst(program_counter)[2])))
