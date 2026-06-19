@@ -1,9 +1,12 @@
+import os
+import sys
+import io
 import unittest
 from unittest.mock import patch
-import io
+
+sys.path.insert(0, os.path.dirname(__file__))
 import main
 import memory
-import sys
 
 #Code written by Tyler, Implemented by Ryan
 
@@ -32,12 +35,12 @@ class TestCommandLineFilename(unittest.TestCase):
     def test_too_many_args_should_fail(self):
         args = ["main.py", "Test1.txt", "Test2.txt"]
         with patch.object(sys, 'argv', args):
-            with patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
-                with self.assertRaises(SystemExit):
+            with patch('main.tk.Tk') as mock_tk:
+                mock_tk.return_value.mainloop.return_value = None
+                with patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
                     main.main()
-                printed_output = mock_stdout.getvalue()
-                value = printed_output.strip()
-                self.assertEqual(value, "File was not provided or too many arguments presented")
+                    printed_output = mock_stdout.getvalue().strip()
+                    self.assertEqual(printed_output, "Too many arguments presented. Launching GUI empty.")
         
 
 
@@ -71,71 +74,57 @@ class TestLoadFileIntoMemory(unittest.TestCase):
 
 class TestRead(unittest.TestCase):
 
-    @patch('builtins.input', return_value='25')
-    def test_read_stores_positive_value(self, mock_input):
+    def test_read_stores_positive_value(self):
         memory = Memory()
-        memory.read(7)
-        self.assertEqual(memory.memory[7], 25)
+        memory.read("07", "25")
+        self.assertEqual(memory.memory["07"], 25)
 
-    @patch('builtins.input', return_value='-99')
-    def test_read_stores_negative_value(self, mock_input):
+    def test_read_stores_negative_value(self):
         memory = Memory()
-        memory.read(7)
-        self.assertEqual(memory.memory[7], -99)
+        memory.read("07", "-99")
+        self.assertEqual(memory.memory["07"], -99)
 
-    @patch('builtins.input', return_value='hello')
-    def test_read_invalid_string_raises_error(self, mock_input):
+    def test_read_invalid_string_raises_error(self):
         memory = Memory()
         with self.assertRaises(ValueError):
-            memory.read(7)
+            memory.read("07", "hello")
 
-    @patch('builtins.input', return_value='99999')
-    def test_read_overflow_raises_error(self, mock_input):
+    def test_read_overflow_raises_error(self):
         memory = Memory()
         with self.assertRaises(OverflowError):
-            memory.read(7)
+            memory.read("07", "99999")
 
-    @patch('builtins.input', return_value='5')
-    def test_read_bad_address_raises_error(self, mock_input):
+    def test_read_bad_address_raises_error(self):
         memory = Memory()
         with self.assertRaises(ValueError):
-            memory.read(100)
+            memory.read("100", "5")
 
 
 class TestWrite(unittest.TestCase):
 
     def test_write_positive_value_formatted(self):
         memory = Memory()
-        memory.memory[5] = 42
-        with patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
-            memory.write(5)
-            printed_output = mock_stdout.getvalue()
-            value= printed_output.strip()
-            self.assertEqual(value, "0042")
+        memory.memory["05"] = 42
+        value = memory.write("05")
+        self.assertEqual(value, "0042")
 
     def test_write_negative_value_formatted(self):
         memory = Memory()
-        memory.memory[5] = -42
-        with patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
-            memory.write(5)
-            printed_output = mock_stdout.getvalue()
-            value= printed_output.strip()
-            self.assertEqual(value, "-0042")
+        memory.memory["05"] = -42
+        value = memory.write("05")
+        self.assertEqual(value, "-0042")
 
     def test_write_zero_formatted(self):
         memory = Memory()
-        memory.memory[5] = 0
-        with patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
-            memory.write(5)
-            printed_output = mock_stdout.getvalue()
-            value= printed_output.strip()
-            self.assertEqual(value, "0000")
+        memory.memory["05"] = 0
+        value = memory.write("05")
+        self.assertEqual(value, "0000")
 
 
     def test_write_bad_address_raises_error(self):
-        state = make_state()
+        memory = Memory()
         with self.assertRaises(ValueError):
-            Memory.write(state, -1)
+            memory.write("100")
 
 
 class TestAdd(unittest.TestCase):
