@@ -41,10 +41,9 @@ class Memory:
             address = f"{address:02d}"
         return self.memory[address]
     
-    def read(self, address):
+    def read(self, address, user_input):
         if int(address) < 0 or int(address) >= self.memory_size:
             raise ValueError("Address " + str(address) + " is not valid")
-        user_input = input("Enter a word for memory location " + str(address) + ": ")
 
         try:
             value = int(user_input)
