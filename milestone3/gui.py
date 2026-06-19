@@ -1,6 +1,8 @@
+from fileinput import filename
 import sys
 import tkinter as tk
 from tkinter import filedialog
+from tkinter import simpledialog
 from memory import Memory
 
 class UVSimGUI:
@@ -47,10 +49,22 @@ class UVSimGUI:
         self.btn_submit.grid(row=3, column=2, padx=5, pady=2, sticky=tk.EW)
 
     def load_file(self):
-        filename = filedialog.askopenfilename()
-        if filename:
-            self.load_file_from_path(filename)
-    
+        file_path = filedialog.askopenfilename(title="Select UVSim Program", filetypes=[("Text Files", "*.txt")])
+        if file_path:
+            with open(file_path, 'r') as file:
+                lines = file.read().splitlines()
+                index = 0
+                for line in lines:
+                    sign = line[0] #sign of the instruction, either + or -
+                    instruction = line[1:3] #the 2 digit instruction of the program
+                    memory_loc = line[3:5] #the 2 digit memory location operations should be performed on
+                    value = line[1:5] #full integer
+
+        #writes memory with index as key number, then stores parsed info into memory of key using a list.
+                    self.memory.write_inst(index, [sign, int(instruction), str(memory_loc), int(value), line])
+                    print(self.memory.read_inst(index))
+                    index += 1
+
     def load_file_from_path(self, filename):
         try:
             with open(filename, 'r') as file:
@@ -75,12 +89,72 @@ class UVSimGUI:
         pass
 
     def submit_input(self):
-        pass
+        input = simpledialog.askstring("Input", "Please enter a value:")
+        if input:
+            print("user entered: " + input)
 
     def run_program(self):
-        pass
+        program_counter = 0
+        run = True
+        
+        while run:
+            #print(f"Current PC: {program_counter}, Read Result: {memory.read_inst(program_counter)} Accumulator: {memory.acumulator}")
+            #print(memory.acumulator)
+            opcode = int(self.memory.read_inst(program_counter)[1])
+            if program_counter > 99:
+                opcode=43
+            match opcode:
+                case 10:
+                    #READ
+                    self.memory.read(self.memory.read_inst(program_counter)[2], self.submit_input())
+                case 11:
+                    #WRITE
+                    self.memory.write(self.memory.read_inst(program_counter)[2])
+                case 20:
+                    #LOAD
+                    self.memory.load(self.memory.read_inst(program_counter)[2])
+                case 21:
+                    #STORE
+                    self.memory.store(self.memory.read_inst(program_counter)[2])
+                case 30:
+                    #print(self.memory.read_inst(program_counter)[2])
+                    self.memory.add(self.memory.read_inst(program_counter)[2])
+                case 31:
+                    self.memory.subtract(self.memory.read_inst(program_counter)[2])
+                case 32:
+                    #DIVIDE
+                    self.memory.divide(self.memory.read_inst(program_counter)[2])
+                case 33:
+                    #MULTIPLY
+                    self.memory.multiply(self.memory.read_inst(program_counter)[2])
+                case 40:
+                    #BRANCH
+                    program_counter = int(self.memory.read_inst(program_counter)[2])
+                    continue
+                    
+                case 41:
+                    #BRANCHNEG
+                    if self.memory.acumulator < 0:
+                        program_counter = int(self.memory.read_inst(program_counter)[2])
+                        continue 
+                    
+                case 42:
+                    #BRANCHZERO
+                    if self.memory.acumulator == 0:
+                        program_counter = int(self.memory.read_inst(program_counter)[2])
+                        continue
+                    
+                case 43:
+                    #HALT
+                    run = False
+                    break
+                    
+                case _:
+                    print("Invalid instruction")
+            program_counter += 1
 
-def main():
+
+"""def main():
     root = tk.Tk()
     app = UVSimGUI(root)
     
@@ -92,4 +166,4 @@ def main():
     root.mainloop()
 
 if __name__ == "__main__":
-    main()
+    main()"""
