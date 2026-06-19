@@ -47,12 +47,29 @@ class UVSimGUI:
         self.btn_submit.grid(row=3, column=2, padx=5, pady=2, sticky=tk.EW)
 
     def load_file(self):
-        pass
+        filename = filedialog.askopenfile()
+        if filename:
+            self.load_file_from_path(filename)
+    
     def load_file_from_path(self, filename):
-        pass
+        try:
+            with open(filename, 'r') as file:
+                lines = file.read().splitlines()
+                for index, line in enumerate(line):
+                    if not line: continue
+                    sign = line[0]
+                    instruction = line[3:5]
+                    memory_loc = line[3:5]
+                    value = line[1:5]
+                    self.memory.write_inst(index, [sign, int(instruction), str(memory_loc), int(value), line])
+            print(f"Loaded {filename}")
+        except:
+            print(f"No File Found")  
 
     def reset(self):
-        pass
+        self.memory = Memory()
+        self.program_counter = 0
+        self.waiting
         
     def log_output(self, msg):
         pass
