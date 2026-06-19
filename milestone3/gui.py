@@ -41,14 +41,6 @@ class UVSimGUI:
         self.output_text = tk.Text(root, height=15, width=50)
         self.output_text.grid(row=2, column=0, columnspan=3, padx=5, pady=5, sticky=tk.NSEW)
 
-        '''# input row (below output)
-        tk.Label(root, text="Please enter Input here:").grid(row=3, column=0, padx=5, pady=2, sticky=tk.EW)
-        self.input_entry = tk.Entry(root)
-        self.input_entry.grid(row=3, column=1, padx=5, pady=2, sticky=tk.EW)
-
-        self.btn_submit = tk.Button(root, text="Submit Input", command=self.submit_input, state=tk.DISABLED)
-        self.btn_submit.grid(row=3, column=2, padx=5, pady=2, sticky=tk.EW)'''
-
     def load_file(self):
         file_path = filedialog.askopenfilename(title="Select UVSim Program", filetypes=[("Text Files", "*.txt")])
         if file_path:
@@ -65,21 +57,6 @@ class UVSimGUI:
                     self.memory.write_inst(index, [sign, int(instruction), str(memory_loc), int(value), line])
                     index += 1
                 self.log_output(f"Loaded {file_path}")
-
-    def load_file_from_path(self, filename):
-        try:
-            with open(filename, 'r') as file:
-                lines = file.read().splitlines()
-                for index, line in enumerate(lines):
-                    if not line: continue
-                    sign = line[0]
-                    instruction = line[1:3]
-                    memory_loc = line[3:5]
-                    value = line[1:5]
-                    self.memory.write_inst(index, [sign, int(instruction), str(memory_loc), int(value), line])
-            self.log_output(f"Loaded {filename}")
-        except:
-            self.log_output(f"No File Found")  
 
     def reset(self):
         self.memory = Memory()
