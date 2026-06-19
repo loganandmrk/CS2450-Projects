@@ -4,6 +4,7 @@ import tkinter as tk
 from tkinter import filedialog
 from tkinter import simpledialog
 from memory import Memory
+from pathlib import Path
 
 class UVSimGUI:
     def __init__(self, root):
@@ -62,8 +63,8 @@ class UVSimGUI:
 
         #writes memory with index as key number, then stores parsed info into memory of key using a list.
                     self.memory.write_inst(index, [sign, int(instruction), str(memory_loc), int(value), line])
-                    print(self.memory.read_inst(index))
                     index += 1
+                self.log_output(f"Loaded {file_path}")
 
     def load_file_from_path(self, filename):
         try:
@@ -76,9 +77,9 @@ class UVSimGUI:
                     memory_loc = line[3:5]
                     value = line[1:5]
                     self.memory.write_inst(index, [sign, int(instruction), str(memory_loc), int(value), line])
-            print(f"Loaded {filename}")
+            self.log_output(f"Loaded {filename}")
         except:
-            print(f"No File Found")  
+            self.log_output(f"No File Found")  
 
     def reset(self):
         self.memory = Memory()
