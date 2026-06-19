@@ -47,7 +47,7 @@ class UVSimGUI:
         self.btn_submit.grid(row=3, column=2, padx=5, pady=2, sticky=tk.EW)
 
     def load_file(self):
-        filename = filedialog.askopenfile()
+        filename = filedialog.askopenfilename()
         if filename:
             self.load_file_from_path(filename)
     
@@ -55,10 +55,10 @@ class UVSimGUI:
         try:
             with open(filename, 'r') as file:
                 lines = file.read().splitlines()
-                for index, line in enumerate(line):
+                for index, line in enumerate(lines):
                     if not line: continue
                     sign = line[0]
-                    instruction = line[3:5]
+                    instruction = line[1:3]
                     memory_loc = line[3:5]
                     value = line[1:5]
                     self.memory.write_inst(index, [sign, int(instruction), str(memory_loc), int(value), line])
