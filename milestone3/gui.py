@@ -4,6 +4,7 @@ import tkinter as tk
 from tkinter import filedialog
 from tkinter import simpledialog
 from memory import Memory
+from milestone3 import memory
 
 class UVSimGUI:
     def __init__(self, root):
@@ -53,7 +54,7 @@ class UVSimGUI:
         if file_path:
             with open(file_path, 'r') as file:
                 lines = file.read().splitlines()
-                return(lines)
+                self.memory
 
     def load_file_from_path(self, filename):
         pass
@@ -82,7 +83,7 @@ class UVSimGUI:
             match opcode:
                 case 10:
                     #READ
-                    self.memory.read(self.memory.read_inst(program_counter)[2], UVSimGUI.submit_input())
+                    self.memory.read(self.memory.read_inst(program_counter)[2], self.submit_input())
                 case 11:
                     #WRITE
                     self.memory.write(self.memory.read_inst(program_counter)[2])
@@ -130,7 +131,7 @@ class UVSimGUI:
             program_counter += 1
 
 
-def main():
+"""def main():
     root = tk.Tk()
     app = UVSimGUI(root)
     
@@ -142,4 +143,4 @@ def main():
     root.mainloop()
 
 if __name__ == "__main__":
-    main()
+    main()"""
