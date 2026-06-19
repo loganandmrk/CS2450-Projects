@@ -83,10 +83,10 @@ class UVSimGUI:
     def reset(self):
         self.memory = Memory()
         self.program_counter = 0
-        self.waiting
+        self.waiting = False
         
     def log_output(self, msg):
-        pass
+        self.output_text.insert(tk.END, msg + "\n")
 
     def submit_input(self):
         input = simpledialog.askstring("Input", "Please enter a value:")
@@ -109,7 +109,7 @@ class UVSimGUI:
                     self.memory.read(self.memory.read_inst(program_counter)[2], self.submit_input())
                 case 11:
                     #WRITE
-                    self.memory.write(self.memory.read_inst(program_counter)[2])
+                    self.memory.write(self.memory.read_inst(program_counter)[2], self.log_output())
                 case 20:
                     #LOAD
                     self.memory.load(self.memory.read_inst(program_counter)[2])

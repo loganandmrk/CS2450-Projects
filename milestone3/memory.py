@@ -62,9 +62,9 @@ class Memory:
         value = self.value_finder(address)
         
         if value < 0:
-            print("-" + str(abs(value)).zfill(4))
+            return ("-" + str(abs(value)).zfill(4))
         else:
-            print(str(value).zfill(4))
+            return (str(value).zfill(4))
 
     def load(self, address):
         if int(address) < 0 or int(address) >= self.memory_size:
