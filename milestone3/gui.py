@@ -67,7 +67,7 @@ class UVSimGUI:
         self.memory = Memory()
         self.program_counter = 0
         self.btn_run.config(state=tk.NORMAL)
-        self.btn_submit.config(state=tk.DISABLED)
+        self.output_text.delete(1.0, tk.END)
         self.log_output("System Reset")
         
     def log_output(self, msg):
