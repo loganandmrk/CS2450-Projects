@@ -42,26 +42,30 @@ class UVSimGUI:
         self.output_text.grid(row=2, column=0, columnspan=3, padx=5, pady=5, sticky=tk.NSEW)
 
     def load_file(self):
-        file_path = filedialog.askopenfilename(title="Select UVSim Program", filetypes=[("Text Files", "*.txt")])
-        if file_path:
-            with open(file_path, 'r') as file:
-                lines = file.read().splitlines()
-                index = 0
-                for line in lines:
-                    sign = line[0] #sign of the instruction, either + or -
-                    instruction = line[1:3] #the 2 digit instruction of the program
-                    memory_loc = line[3:5] #the 2 digit memory location operations should be performed on
-                    value = line[1:5] #full integer
+        try:
+            file_path = filedialog.askopenfilename(title="Select UVSim Program", filetypes=[("Text Files", "*.txt")])
+            if file_path:
+                with open(file_path, 'r') as file:
+                    lines = file.read().splitlines()
+                    index = 0
+                    for line in lines:
+                        sign = line[0] #sign of the instruction, either + or -
+                        instruction = line[1:3] #the 2 digit instruction of the program
+                        memory_loc = line[3:5] #the 2 digit memory location operations should be performed on
+                        value = line[1:5] #full integer
 
-        #writes memory with index as key number, then stores parsed info into memory of key using a list.
-                    self.memory.write_inst(index, [sign, int(instruction), str(memory_loc), int(value), line])
-                    index += 1
-                self.log_output(f"Loaded {file_path}")
+            #writes memory with index as key number, then stores parsed info into memory of key using a list.
+                        self.memory.write_inst(index, [sign, int(instruction), str(memory_loc), int(value), line])
+                        index += 1
+                    self.log_output(f"Loaded {file_path}")
+        except ValueError:
+            self.log_output("Invalid file format. Please select a valid UVSim program.")
+        except IndexError:
+            self.log_output("File contains too long of instruction. Each instruction must be a sign and 4 digits long.")
 
     def reset(self):
         self.memory = Memory()
         self.program_counter = 0
-        self.waiting_for_input = False
         self.btn_run.config(state=tk.NORMAL)
         self.output_text.delete(1.0, tk.END)
         self.log_output("System Reset")
@@ -70,7 +74,7 @@ class UVSimGUI:
         self.output_text.insert(tk.END, msg + "\n")
 
     def submit_input(self):
-        input = simpledialog.askstring("Input", "Please enter a value:")
+        input = simpledialog.askstring("Input", "Please enter an integer:")
         input = int(input)
         return input
 
@@ -87,27 +91,65 @@ class UVSimGUI:
             match opcode:
                 case 10:
                     #READ
-                    self.memory.read(self.memory.read_inst(program_counter)[2], self.submit_input())
+                    while True:
+                        try:
+                            self.memory.read(self.memory.read_inst(program_counter)[2], self.submit_input())
+                            break
+                        except ValueError:
+                            self.log_output("Invalid input. Please enter a valid integer.")
+                        except OverflowError:
+                            self.log_output("Input value is out of range. Please enter a value between -9999 and 9999.")
                 case 11:
                     #WRITE
-                    self.log_output(self.memory.write(self.memory.read_inst(program_counter)[2]))
+                    try:
+                        self.memory.write(self.memory.read_inst(program_counter)[2], self.log_output(self.memory.write(self.memory.read_inst(program_counter)[2])))
+                    except ValueError:
+                        self.log_output("Invalid memory address. Please check the program for errors.")
+                        self.reset()
                 case 20:
                     #LOAD
-                    self.memory.load(self.memory.read_inst(program_counter)[2])
+                    try:
+                        self.memory.load(self.memory.read_inst(program_counter)[2])
+                    except ValueError:
+                        self.log_output("Invalid memory address. Please check the program for errors.")
+                        self.reset()
                 case 21:
                     #STORE
-                    self.memory.store(self.memory.read_inst(program_counter)[2])
+                    try:
+                        self.memory.store(self.memory.read_inst(program_counter)[2])
+                    except ValueError:
+                        self.log_output("Invalid memory address. Please check the program for errors.")
+                        self.reset()
+                    except OverflowError:
+                        self.log_output("Accumulator or input value is out of range.")
+                        self.reset()
                 case 30:
                     #print(self.memory.read_inst(program_counter)[2])
-                    self.memory.add(self.memory.read_inst(program_counter)[2])
+                    try:
+                        self.memory.add(self.memory.read_inst(program_counter)[2])
+                    except ValueError:
+                        self.log_output("Invalid memory address. Please check the program for errors.")
+                        self.reset()
                 case 31:
-                    self.memory.subtract(self.memory.read_inst(program_counter)[2])
+                    try:
+                        self.memory.subtract(self.memory.read_inst(program_counter)[2])
+                    except ValueError:
+                        self.log_output("Invalid memory address. Please check the program for errors.")
+                        self.reset()
                 case 32:
                     #DIVIDE
-                    self.memory.divide(self.memory.read_inst(program_counter)[2])
+                    try:
+                        self.memory.divide(self.memory.read_inst(program_counter)[2])
+                    except ValueError:
+                        self.log_output("Invalid memory address. Please check the program for errors.")
+                        self.reset()
                 case 33:
                     #MULTIPLY
-                    self.memory.multiply(self.memory.read_inst(program_counter)[2])
+                    try:
+                        self.memory.multiply(self.memory.read_inst(program_counter)[2])
+                    except ValueError:
+                        self.log_output("Invalid memory address. Please check the program for errors.")
+                        self.reset()
                 case 40:
                     #BRANCH
                     program_counter = int(self.memory.read_inst(program_counter)[2])

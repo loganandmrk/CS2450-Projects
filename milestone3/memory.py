@@ -51,7 +51,7 @@ class Memory:
             raise ValueError(str(user_input) + " is not a valid number")
         
         if value < self.word_min or value > self.word_max:
-            raise OverflowError(str(value) + " is out of range")
+            raise OverflowError
         
         self.memory[address] = value
     
