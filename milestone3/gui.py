@@ -76,16 +76,9 @@ class UVSimGUI:
         self.output_text.insert(tk.END, msg + "\n")
 
     def submit_input(self):
-        try:
-            input = simpledialog.askstring("Input", "Please enter a value:")
-            input = int(input)
-            return input
-        except ValueError:
-            self.log_output("Invalid input. Please enter a valid integer.")
-            return self.submit_input()
-        except OverflowError:
-            self.log_output("Input value is out of range. Please enter a value between -9999 and 9999.")
-            return self.submit_input()
+        input = simpledialog.askstring("Input", "Please enter an integer:")
+        input = int(input)
+        return input
 
     def run_program(self):
         program_counter = 0
@@ -100,7 +93,12 @@ class UVSimGUI:
             match opcode:
                 case 10:
                     #READ
-                    self.memory.read(self.memory.read_inst(program_counter)[2], self.submit_input())
+                    try:
+                        self.memory.read(self.memory.read_inst(program_counter)[2], self.submit_input())
+                    except ValueError:
+                        self.log_output("Invalid input. Please enter a valid integer.")
+                    except OverflowError:
+                        self.log_output("Input value is out of range. Please enter a value between -9999 and 9999.")
                 case 11:
                     #WRITE
                     self.memory.write(self.memory.read_inst(program_counter)[2], self.log_output(self.memory.write(self.memory.read_inst(program_counter)[2])))
