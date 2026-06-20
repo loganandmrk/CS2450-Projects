@@ -44,6 +44,18 @@ Control operation:
     BRANCHZERO = 42 Branch to a specific location in memory if the accumulator is zero.
     HALT = 43 Stop the program
 
+A good example file that adds two inputs together would look like this:
+    +1007
+    +1008
+    +2007
+    +3008
+    +2109
+    +1109
+    +4300
+    +0000
+    +0000
+    +0000
+
 To run unit tests please use this command when in the most current milestone directory: python -m unittest unit_tests
 
 Each program must contain a +4300 instruction to properly terminate the program.
