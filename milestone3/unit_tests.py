@@ -266,15 +266,15 @@ class TestTruncationAc(unittest.TestCase):
 
     def test_truncation_within_bounds_positive(self):
         mem = Memory()
-        mem.acumulator = -5000
-        mem.truncation_acc()
-        self.assertEqual(mem.acumulator, -5000)
-
-    def test_truncation_within_bound_negative(self):
-        mem = Memory()
         mem.acumulator = 5000
         mem.truncation_acc()
         self.assertEqual(mem.acumulator, 5000)
+
+    def test_truncation_within_bound_negative(self):
+        mem = Memory()
+        mem.acumulator = -5000
+        mem.truncation_acc()
+        self.assertEqual(mem.acumulator, -5000)
     
     def test_truncation_outside_bounds_negative(self):
         mem = Memory()
