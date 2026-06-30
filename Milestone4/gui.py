@@ -74,16 +74,9 @@ class UVSimGUI:
         self.output_text.insert(tk.END, msg + "\n")
 
     def submit_input(self):
-        user_input = simpledialog.askstring("Input", "Please enter an integer:")
-        if user_input is None:
-            self.log_output("Input cancelled. Please restart the program and enter a valid integer.")
-            return None
-
-        try:
-            return int(user_input)
-        except ValueError:
-            self.log_output("Invalid input. Please enter a valid integer.")
-            return None
+        input = simpledialog.askstring("Input", "Please enter an integer:")
+        input = int(input)
+        return input
 
     def run_program(self):
         program_counter = 0
@@ -100,23 +93,16 @@ class UVSimGUI:
                     #READ
                     while True:
                         try:
-                            user_input = self.submit_input()
-                            if user_input is None:
-                                run = False
-                                break
-                            self.memory.read(self.memory.read_inst(program_counter)[2], user_input)
+                            self.memory.read(self.memory.read_inst(program_counter)[2], self.submit_input())
                             break
                         except ValueError:
                             self.log_output("Invalid input. Please enter a valid integer.")
                         except OverflowError:
                             self.log_output("Input value is out of range. Please enter a value between -9999 and 9999.")
-                    if not run:
-                        break
                 case 11:
                     #WRITE
                     try:
-                        value = self.memory.write(self.memory.read_inst(program_counter)[2])
-                        self.log_output(value)
+                        self.memory.write(self.memory.read_inst(program_counter)[2], self.log_output(self.memory.write(self.memory.read_inst(program_counter)[2])))
                     except ValueError:
                         self.log_output("Invalid memory address. Please check the program for errors.")
                         self.reset()
