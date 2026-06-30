@@ -1,12 +1,14 @@
 import os
 import sys
 import io
+import tkinter as tk
 import unittest
 from unittest.mock import patch
 
 sys.path.insert(0, os.path.dirname(__file__))
 import main
 import memory
+import gui
 
 #Code written by Tyler, Implemented by Ryan
 
