@@ -3,6 +3,7 @@ import sys
 import tkinter as tk
 from tkinter import filedialog
 from tkinter import simpledialog
+from tkinter import colorchooser
 from memory import Memory
 from pathlib import Path
 
@@ -21,25 +22,57 @@ class UVSimGUI:
         root.grid_columnconfigure(0, weight=1)
         root.grid_columnconfigure(1, weight=1)
         root.grid_columnconfigure(2, weight=1)
+        root.grid_columnconfigure(3, weight=1)
         root.grid_rowconfigure(0, weight=0)
         root.grid_rowconfigure(1, weight=0)
         root.grid_rowconfigure(2, weight=1)
         root.grid_rowconfigure(3, weight=0)
 
+        
+
         # control buttons (row 0)
         self.btn_load = tk.Button(root, text="Load File", command=self.load_file)
-        self.btn_load.grid(row=0, column=0, padx=50, pady=25, sticky=tk.NSEW)
+        self.btn_load.grid(row=0, column=0, padx=25, pady=25, sticky=tk.NSEW)
 
         self.btn_run = tk.Button(root, text="Run", command=self.run_program)
-        self.btn_run.grid(row=0, column=2, padx=50, pady=25, sticky=tk.NSEW)
+        self.btn_run.grid(row=0, column=2, padx=25, pady=25, sticky=tk.NSEW)
 
         self.btn_reset = tk.Button(root, text="Reset", command=self.reset)
-        self.btn_reset.grid(row=0, column=1, padx=50, pady=25, sticky=tk.NSEW)
+        self.btn_reset.grid(row=0, column=1, padx=25, pady=25, sticky=tk.NSEW)
 
         # output label and text (rows 1-2)
         tk.Label(root, text="Output:").grid(row=1, column=0, padx=5, pady=2, sticky=tk.W)
         self.output_text = tk.Text(root, height=15, width=50)
-        self.output_text.grid(row=2, column=0, columnspan=3, padx=5, pady=5, sticky=tk.NSEW)
+        self.output_text.grid(row=2, column=0, columnspan=4, padx=5, pady=5, sticky=tk.NSEW)
+
+        self.btn_theme = tk.Button(root, text="Change Colors", command=self.change_colors)
+        self.btn_theme.grid(row=0, column=3, padx=25, pady=25, sticky=tk.NSEW)
+
+        default_primary = "#4C721D"
+        default_secondary = "#FFFFFF"
+        self.apply_theme(default_primary, default_secondary)
+
+    def change_colors(self):
+        primary_color = colorchooser.askcolor(title="Choose primary color")[1]
+        if not primary_color:
+            return
+
+        secondary_color = colorchooser.askcolor(title="Choose secondary color")[1]
+        if not secondary_color:
+            return
+
+        self.apply_theme(primary_color, secondary_color)
+
+    def apply_theme(self, primary_color, secondary_color):
+        self.root.configure(bg=primary_color)
+        for widget in self.root.winfo_children():
+            if isinstance(widget, tk.Button):
+                widget.configure(bg=secondary_color, fg="#000000", 
+                                 activebackground=primary_color, activeforeground=secondary_color)
+            elif isinstance(widget, tk.Label):
+                widget.configure(bg=secondary_color, fg=primary_color)
+            elif isinstance(widget, tk.Text):
+                widget.configure(bg=secondary_color, fg=primary_color, insertbackground=primary_color)
 
     def load_file(self):
         try:
