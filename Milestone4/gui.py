@@ -3,6 +3,7 @@ import sys
 import tkinter as tk
 from tkinter import filedialog
 from tkinter import simpledialog
+from tkinter import colorchooser
 from memory import Memory
 from pathlib import Path
 
@@ -21,6 +22,7 @@ class UVSimGUI:
         root.grid_columnconfigure(0, weight=1)
         root.grid_columnconfigure(1, weight=1)
         root.grid_columnconfigure(2, weight=1)
+        root.grid_columnconfigure(3, weight=1)
         root.grid_rowconfigure(0, weight=0)
         root.grid_rowconfigure(1, weight=0)
         root.grid_rowconfigure(2, weight=1)
@@ -39,7 +41,36 @@ class UVSimGUI:
         # output label and text (rows 1-2)
         tk.Label(root, text="Output:").grid(row=1, column=0, padx=5, pady=2, sticky=tk.W)
         self.output_text = tk.Text(root, height=15, width=50)
-        self.output_text.grid(row=2, column=0, columnspan=3, padx=5, pady=5, sticky=tk.NSEW)
+        self.output_text.grid(row=2, column=0, columnspan=4, padx=5, pady=5, sticky=tk.NSEW)
+
+        self.btn_reset = tk.Button(root, text="Change Theme", command=self.change_colors)
+        self.btn_reset.grid(row=0, column=3, padx=50, pady=25, sticky=tk.NSEW)
+
+        default_primary = "#4C721D"
+        default_secondary = "#FFFFFF"
+        self.apply_theme(default_primary, default_secondary)
+
+    def change_colors(self):
+        primary_color = colorchooser.askcolor(title="Choose primary color")[1]
+        if not primary_color:
+            return
+
+        secondary_color = colorchooser.askcolor(title="Choose secondary color")[1]
+        if not secondary_color:
+            return
+
+        self.apply_theme(primary_color, secondary_color)
+
+    def apply_theme(self, primary_color, secondary_color):
+        self.root.configure(bg=primary_color)
+        for widget in self.root.winfo_children():
+            if isinstance(widget, tk.Button):
+                widget.configure(bg=secondary_color, fg="#000000", 
+                                 activebackground=primary_color, activeforeground=secondary_color)
+            elif isinstance(widget, tk.Label):
+                widget.configure(bg=secondary_color, fg=primary_color)
+            elif isinstance(widget, tk.Text):
+                widget.configure(bg=secondary_color, fg=primary_color, insertbackground=primary_color)
 
     def load_file(self):
         try:
@@ -74,9 +105,16 @@ class UVSimGUI:
         self.output_text.insert(tk.END, msg + "\n")
 
     def submit_input(self):
-        input = simpledialog.askstring("Input", "Please enter an integer:")
-        input = int(input)
-        return input
+        user_input = simpledialog.askstring("Input", "Please enter an integer:")
+        if user_input is None:
+            self.log_output("Input cancelled. Please restart the program and enter a valid integer.")
+            return None
+
+        try:
+            return int(user_input)
+        except ValueError:
+            self.log_output("Invalid input. Please enter a valid integer.")
+            return None
 
     def run_program(self):
         program_counter = 0
@@ -93,16 +131,23 @@ class UVSimGUI:
                     #READ
                     while True:
                         try:
-                            self.memory.read(self.memory.read_inst(program_counter)[2], self.submit_input())
+                            user_input = self.submit_input()
+                            if user_input is None:
+                                run = False
+                                break
+                            self.memory.read(self.memory.read_inst(program_counter)[2], user_input)
                             break
                         except ValueError:
                             self.log_output("Invalid input. Please enter a valid integer.")
                         except OverflowError:
                             self.log_output("Input value is out of range. Please enter a value between -9999 and 9999.")
+                    if not run:
+                        break
                 case 11:
                     #WRITE
                     try:
-                        self.memory.write(self.memory.read_inst(program_counter)[2], self.log_output(self.memory.write(self.memory.read_inst(program_counter)[2])))
+                        value = self.memory.write(self.memory.read_inst(program_counter)[2])
+                        self.log_output(value)
                     except ValueError:
                         self.log_output("Invalid memory address. Please check the program for errors.")
                         self.reset()
