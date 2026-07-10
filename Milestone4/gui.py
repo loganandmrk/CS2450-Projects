@@ -1,4 +1,5 @@
 from fileinput import filename
+from logging import root
 import sys
 import tkinter as tk
 from tkinter import filedialog
@@ -11,7 +12,7 @@ class UVSimGUI:
     def __init__(self, root):
         self.root = root
         self.root.title("UVSim Emulator")
-        self.root.geometry("500x700")
+        self.root.state("zoomed")
         
         self.memory = Memory()
         self.program_counter = 0
@@ -49,6 +50,7 @@ class UVSimGUI:
         default_primary = "#4C721D"
         default_secondary = "#FFFFFF"
         self.apply_theme(default_primary, default_secondary)
+        self.log_output("Welcome to UVSim Emulator! Please load a program to begin.")
 
     def change_colors(self):
         primary_color = colorchooser.askcolor(title="Choose primary color")[1]
@@ -105,11 +107,10 @@ class UVSimGUI:
         self.output_text.insert(tk.END, msg + "\n")
 
     def submit_input(self):
-        user_input = simpledialog.askstring("Input", "Please enter an integer:")
+        user_input = simpledialog.askstring("Input", "Please enter an integer:", parent=self.root)
         if user_input is None:
             self.log_output("Input cancelled. Please restart the program and enter a valid integer.")
             return None
-
         try:
             return int(user_input)
         except ValueError:
