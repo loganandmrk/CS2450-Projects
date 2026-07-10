@@ -21,7 +21,7 @@ Valid inputs would be integers from 9999 to -9999. If the user wishes to select 
 
 Outputs will be posted to the output box as well as any error messages.
 
-<img width="504" height="731" alt="Phase1GUI Design" src="https://github.com/user-attachments/assets/example.png" />
+<img width="504" height="731" alt="Phase1GUI Design" src="https://github.com/loganandmrk/CS2450-Projects/edit/main/example.png.png" />
 
 In order to fully understand the functions of the program we have outlined what each instruction does:
 I/O operation:
