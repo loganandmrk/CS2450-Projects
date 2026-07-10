@@ -97,7 +97,7 @@ class UVSimGUI:
         for i in range(self.memory.memory_size):
             addr = f"{i:02d}"
             value = self.memory.read_inst(addr)
-            display_value = format_word(value) if value is not None else ""
+            display_value = format_word(value[1]) if value is not None else ""
             meaning = describe_word(value)
             self.editor_tree.insert("", tk.END, iid=addr, values=(addr, display_value, meaning))
         valid_selection = [a for a in selection_to_restore if self.editor_tree.exists(a)]
