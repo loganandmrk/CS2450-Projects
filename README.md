@@ -10,11 +10,19 @@ You can also run the gui by opening the main.py file and clicking run in any pyt
 
 Test files are provided for to showcase how the system will work in the testfiles folder.
 
-The Gui consists of 3 different options for the user to select:
-1. The "Load File" button accepts a .txt file that has been previously written to execute the instructions provided.
-   Once the file is loaded a confirmation message will appear in the output box. If no file is entered a message will appear.
-2. The "Reset" button will clear the output box and then clear any memory and functions done. It will print a message when the system is successfully reset.
-3. The "Run" button will begin the execution of the file loaded.
+The Gui consists of multiple different options for the user to select:
+- The "Load File" button accepts a .txt file that has been previously written to execute the instructions provided.
+  > Once the file is loaded a confirmation message will appear in the output box. If no file is entered a message will appear.
+- The "Reset" button will clear the output box and then clear any memory and functions done as well as uploaded files. It will print a message when the system is successfully reset.
+- The "Run" button will begin the execution of the file loaded.
+- The "Change Theme" button will allow the user to first select a main color (default green) and then background color (default white).
+- The "Add/Edit Slot" button will allow the user to edit a selected word or instruction.
+- The "Delete" button will deleted the currently selected word or instruction.
+- The "Cut" button will delete the currently selected word or instruction and store it in the applications clipboard.
+- The "Copy" button will keep the currently selected word or instruction and store it in the applications clipboard.
+- The "Paste" button will overwrite the currently selected word or instruction with the applications most recent item on the clipboard.
+- The "Save" button will allow the user to save the current memory as a .txt file on the device.
+  > Files will trim any whitespace within the program. Files will also be saved as valid instructions only, any memory location containing "DATA" or "(empty)" will be excluded.
 
 If the program that is running on the UVSim requires a user input it will ask for a value from the user. 
 Valid inputs would be integers from 9999 to -9999. If the user wishes to select a negative number they will need to type a '-' before the number.
