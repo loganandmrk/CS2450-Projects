@@ -161,15 +161,7 @@ class UVSimGUI:
             except (ValueError, OverflowError) as e:
                 self.log_output(f"Could not set address {addr}: {e}")
                 return
-            #get the sign, instruction, memory location, value, and full word to store into memory as a list.
-            if value >= 0:
-                sign = "+"
-            else:
-                sign = "-"
-            instruction = int(str(value)[:2])
-            memory_loc = str(value)[2:4]
-            line = str(sign + str(value).zfill(4))
-            self.memory.write_inst(addr, [sign, int(instruction), str(memory_loc), int(value), line])
+            self.memory.write_inst(addr, value)
             self.log_output(f"Set address {addr} to {format_word(value)}.")
         self.refresh_editor(keep_selection=[addr])
  
@@ -243,14 +235,38 @@ class UVSimGUI:
 
     def apply_theme(self, primary_color, secondary_color):
         self.root.configure(bg=primary_color)
-        for widget in self.root.winfo_children():
+
+        def apply_to_widget(widget):
             if isinstance(widget, tk.Button):
-                widget.configure(bg=secondary_color, fg="#000000", 
-                                 activebackground=primary_color, activeforeground=secondary_color)
+                widget.configure(
+                    bg=secondary_color,
+                    fg="#000000",
+                    activebackground=primary_color,
+                    activeforeground=secondary_color,
+                )
             elif isinstance(widget, tk.Label):
                 widget.configure(bg=secondary_color, fg=primary_color)
             elif isinstance(widget, tk.Text):
                 widget.configure(bg=secondary_color, fg=primary_color, insertbackground=primary_color)
+            elif isinstance(widget, tk.Scrollbar):
+                widget.configure(bg=secondary_color)
+            elif isinstance(widget, tk.Frame):
+                widget.configure(bg=secondary_color)
+
+            for child in widget.winfo_children():
+                apply_to_widget(child)
+
+        for widget in self.root.winfo_children():
+            apply_to_widget(widget)
+
+    def _load_program_lines(self, lines):
+        self.memory = Memory()
+        index = 0
+        for line in lines:
+            if index >= self.memory.memory_size:
+                break
+            self.memory.write_inst(index, int(line))
+            index += 1
 
     def load_file(self):
         try:
@@ -258,17 +274,8 @@ class UVSimGUI:
             if file_path:
                 with open(file_path, 'r') as file:
                     lines = file.read().splitlines()
-                    index = 0
-                    for line in lines:
-                        sign = line[0] #sign of the instruction, either + or -
-                        instruction = line[1:3] #the 2 digit instruction of the program
-                        memory_loc = line[3:5] #the 2 digit memory location operations should be performed on
-                        value = line[1:5] #full integer
-
-            #writes memory with index as key number, then stores parsed info into memory of key using a list.
-                        self.memory.write_inst(index, [sign, int(instruction), str(memory_loc), int(value), line])
-                        index += 1
-                    self.log_output(f"Loaded {file_path}")
+                self._load_program_lines(lines)
+                self.log_output(f"Loaded {file_path}")
         except ValueError:
             self.log_output("Invalid file format. Please select a valid UVSim program.")
         except IndexError:
@@ -285,6 +292,8 @@ class UVSimGUI:
         
     def log_output(self, msg):
         self.output_text.insert(tk.END, msg + "\n")
+        self.output_text.see(tk.END)
+        self.root.update_idletasks()
 
     def submit_input(self):
         user_input = simpledialog.askstring("Input", "Please enter an integer:", parent=self.root)
@@ -312,25 +321,31 @@ class UVSimGUI:
     def run_program(self):
         program_counter = 0
         run = True
-        
+
         while run:
+            raw_value = self.memory.read_inst(program_counter)
+            if isinstance(raw_value, list):
+                raw_value = int(raw_value[4])
+            if raw_value is None:
+                self.log_output(f"Address {program_counter:02d} is empty. Halting.")
+                break
             try:
-                opcode = int(self.memory.read_inst(program_counter)[1])
+                opcode, operand = decode_instruction(raw_value)
             except (ValueError, TypeError):
-                self.log_output(f"Data may be writing over instructions. Please check program for errors.")
+                self.log_output("Data may be writing over instructions. Please check program for errors.")
                 break
             if program_counter > 99:
-                opcode=43
+                opcode = 43
             match opcode:
                 case 10:
-                    #READ
+                    # READ
                     while True:
                         try:
                             user_input = self.submit_input()
                             if user_input is None:
                                 run = False
                                 break
-                            self.memory.read(self.memory.read_inst(program_counter)[2], user_input)
+                            self.memory.read(operand, user_input)
                             break
                         except ValueError:
                             self.log_output("Invalid input. Please enter a valid integer.")
@@ -339,80 +354,92 @@ class UVSimGUI:
                     if not run:
                         break
                 case 11:
-                    #WRITE
+                    # WRITE
                     try:
-                        value = self.memory.write(self.memory.read_inst(program_counter)[2])
+                        value = self.memory.write(operand)
                         self.log_output(value)
                     except ValueError:
                         self.log_output("Invalid memory address. Please check the program for errors.")
                         self.reset()
+                        return
                 case 20:
-                    #LOAD
+                    # LOAD
                     try:
-                        self.memory.load(self.memory.read_inst(program_counter)[2])
+                        self.memory.load(operand)
                     except ValueError:
                         self.log_output("Invalid memory address. Please check the program for errors.")
                         self.reset()
+                        return
                 case 21:
-                    #STORE
+                    # STORE
                     try:
-                        self.memory.store(self.memory.read_inst(program_counter)[2])
+                        self.memory.store(operand)
                     except ValueError:
                         self.log_output("Invalid memory address. Please check the program for errors.")
                         self.reset()
+                        return
                     except OverflowError:
                         self.log_output("Accumulator or input value is out of range.")
                         self.reset()
+                        return
                 case 30:
-                    #print(self.memory.read_inst(program_counter)[2])
                     try:
-                        self.memory.add(self.memory.read_inst(program_counter)[2])
+                        self.memory.add(operand)
                     except ValueError:
                         self.log_output("Invalid memory address. Please check the program for errors.")
                         self.reset()
+                        return
                 case 31:
                     try:
-                        self.memory.subtract(self.memory.read_inst(program_counter)[2])
+                        self.memory.subtract(operand)
                     except ValueError:
                         self.log_output("Invalid memory address. Please check the program for errors.")
                         self.reset()
+                        return
                 case 32:
-                    #DIVIDE
+                    # DIVIDE
                     try:
-                        self.memory.divide(self.memory.read_inst(program_counter)[2])
+                        self.memory.divide(operand)
                     except ValueError:
                         self.log_output("Invalid memory address. Please check the program for errors.")
                         self.reset()
+                        return
                 case 33:
-                    #MULTIPLY
+                    # MULTIPLY
                     try:
-                        self.memory.multiply(self.memory.read_inst(program_counter)[2])
+                        self.memory.multiply(operand)
                     except ValueError:
                         self.log_output("Invalid memory address. Please check the program for errors.")
                         self.reset()
+                        return
                 case 40:
-                    #BRANCH
-                    program_counter = int(self.memory.read_inst(program_counter)[2])
+                    # BRANCH
+                    program_counter = int(operand)
                     continue
-                    
+
                 case 41:
-                    #BRANCHNEG
+                    # BRANCHNEG
                     if self.memory.acumulator < 0:
-                        program_counter = int(self.memory.read_inst(program_counter)[2])
-                        continue 
-                    
-                case 42:
-                    #BRANCHZERO
-                    if self.memory.acumulator == 0:
-                        program_counter = int(self.memory.read_inst(program_counter)[2])
+                        program_counter = int(operand)
                         continue
-                    
+
+                case 42:
+                    # BRANCHZERO
+                    if self.memory.acumulator == 0:
+                        program_counter = int(operand)
+                        continue
+
                 case 43:
-                    #HALT
+                    # HALT
                     run = False
                     break
-                    
+
                 case _:
-                    print("Invalid instruction")
+                    self.log_output(
+                        f"Address {program_counter:02d} contains {format_word(raw_value)}, "
+                        f"which is not a recognized instruction. Halting."
+                    )
+                    run = False
+                    break
             program_counter += 1
         self.refresh_editor()
