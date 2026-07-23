@@ -8,7 +8,7 @@ from tkinter import colorchooser
 from tkinter import ttk
 from memory import Memory
 from pathlib import Path
-from memory import Memory, decode_instruction, describe_word, format_word, parse_word
+from memory import Memory, decode_instruction, describe_word, format_word, parse_word, convert_4_digit_to_6_digit
 
 class UVSimGUI:
     def __init__(self, root):
@@ -21,7 +21,7 @@ class UVSimGUI:
         self.waiting_for_input = False
         self.input_address = None
         
-        # configure grid: three columns (buttons, output area, submit)
+        #Configure GUI Layout
         root.grid_columnconfigure(0, weight=1)
         root.grid_columnconfigure(1, weight=1)
         root.grid_columnconfigure(2, weight=1)
@@ -265,7 +265,8 @@ class UVSimGUI:
         for line in lines:
             if index >= self.memory.memory_size:
                 break
-            self.memory.write_inst(index, int(line))
+            converted_line = convert_4_digit_to_6_digit(line)
+            self.memory.write_inst(index, int(converted_line))
             index += 1
 
     def load_file(self):
