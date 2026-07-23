@@ -1,6 +1,6 @@
 MEMORY_SIZE = 100
-WORD_MIN = -9999
-WORD_MAX = 9999
+WORD_MIN = -999999
+WORD_MAX = 999999
  
 INSTRUCTION_MNEMONICS = {
     10: "READ",
@@ -20,8 +20,15 @@ INSTRUCTION_MNEMONICS = {
  
 def decode_instruction(value):
     magnitude = abs(int(value))
-    opcode = magnitude // 100
-    operand = magnitude % 100
+    if magnitude >= 100000:
+        opcode = magnitude // 10000
+        operand = magnitude % 10000
+    elif magnitude >= 10000:
+        opcode = magnitude // 1000
+        operand = magnitude % 1000
+    else:
+        opcode = magnitude // 100
+        operand = magnitude % 100
     return opcode, f"{operand:02d}"
  
  
@@ -38,7 +45,7 @@ def describe_word(value):
  
 def format_word(value):
     sign = "-" if value < 0 else "+"
-    return f"{sign}{abs(value):04d}"
+    return f"{sign}{abs(value):06d}"
  
  
 def parse_word(text):
@@ -50,6 +57,33 @@ def parse_word(text):
     if value < WORD_MIN or value > WORD_MAX:
         raise OverflowError(f"{value} is outside the allowed range ({WORD_MIN} to {WORD_MAX})")
     return value
+
+
+def convert_4_digit_to_6_digit(text):
+    text = text.strip()
+    sign = ""
+    if text.startswith("+"):
+        text = text[1:]
+    elif text.startswith("-"):
+        sign = "-"
+        text = text[1:]
+
+    if len(text) != 4 or not text.isdigit():
+        return f"{sign}{text}"
+
+    opcode = int(text[:2])
+    operand = int(text[2:])
+
+    if opcode not in INSTRUCTION_MNEMONICS:
+        return f"{sign}{text}"
+
+    if operand < 0 or operand > 99:
+        return f"{sign}{text}"
+
+    if text[:2] == text[2:]:
+        return f"{sign}{text}"
+
+    return f"{sign}0{text[:2]}0{text[2:]}"
  
  
 class Memory:
@@ -77,9 +111,9 @@ class Memory:
         value = self.acumulator
         if value > self.word_max or value < self.word_min:
             if value < 0:
-                value %= -10000
+                value %= -1000000
             if value > 0:
-                value %= 10000
+                value %= 1000000
         self.acumulator = value
         return self.acumulator
  
@@ -105,9 +139,9 @@ class Memory:
         if value is None:
             raise ValueError("Memory location " + str(address) + " is empty")
         if value < 0:
-            return "-" + str(abs(value)).zfill(4)
+            return "-" + str(abs(value)).zfill(6)
         else:
-            return str(value).zfill(4)
+            return str(value).zfill(6)
  
     def load(self, address):
         self._validate_address(address)
