@@ -15,12 +15,11 @@ class UVSimGUI:
         self.root = root
         self.root.title("UVSim Emulator")
         self.root.state("zoomed")
-        
+
+        #initalization of Memory Class and Program Counter
         self.memory = Memory()
         self.program_counter = 0
-        self.waiting_for_input = False
-        self.input_address = None
-        
+
         #Configure GUI Layout
         root.grid_columnconfigure(0, weight=1)
         root.grid_columnconfigure(1, weight=1)
@@ -32,7 +31,7 @@ class UVSimGUI:
         root.grid_rowconfigure(3, weight=1)
         root.grid_rowconfigure(4, weight=0)
 
-        # control buttons (row 0)
+        #Buttons
         self.btn_load = tk.Button(root, text="Load File", command=self.load_file)
         self.btn_load.grid(row=0, column=0, padx=50, pady=25, sticky=tk.NSEW)
 
@@ -47,10 +46,6 @@ class UVSimGUI:
 
         self.btn_reset = tk.Button(root, text="Reset", command=self.reset)
         self.btn_reset.grid(row=0, column=1, padx=50, pady=25, sticky=tk.NSEW)
-
-        # output label and text (rows 1-2)
-        self.output_text = tk.Text(root, height=15, width=50)
-        self.output_text.grid(row=3, column=0, columnspan=4, padx=5, pady=5, sticky=tk.NSEW)
 
         editor_btn_frame = tk.Frame(root)
         editor_btn_frame.grid(row=1, column=2, padx=50, pady=25, sticky=tk.NSEW)
@@ -107,6 +102,7 @@ class UVSimGUI:
         self.btn_reset = tk.Button(root, text="Change Theme", command=self.change_colors)
         self.btn_reset.grid(row=0, column=3, padx=50, pady=25, sticky=tk.NSEW)
 
+        #Final Set-up
         default_primary = "#4C721D"
         default_secondary = "#FFFFFF"
         self.apply_theme(default_primary, default_secondary)
@@ -280,7 +276,7 @@ class UVSimGUI:
         except ValueError:
             self.log_output("Invalid file format. Please select a valid UVSim program.")
         except IndexError:
-            self.log_output("File contains too long of instruction. Each instruction must be a sign and 4 digits long.")
+            self.log_output("File contains too long of instruction. Each instruction must be a sign and 6 digits long.")
         self.refresh_editor()
 
     def reset(self):
@@ -351,7 +347,7 @@ class UVSimGUI:
                         except ValueError:
                             self.log_output("Invalid input. Please enter a valid integer.")
                         except OverflowError:
-                            self.log_output("Input value is out of range. Please enter a value between -9999 and 9999.")
+                            self.log_output("Input value is out of range. Please enter a value between -999999 and 999999.")
                     if not run:
                         break
                 case 11:

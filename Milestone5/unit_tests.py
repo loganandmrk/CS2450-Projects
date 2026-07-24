@@ -92,7 +92,7 @@ class TestRead(unittest.TestCase):
     def test_read_overflow_raises_error(self):
         memory = Memory()
         with self.assertRaises(OverflowError):
-            memory.read("07", "99999")
+            memory.read("07", "1000000")
 
     def test_read_bad_address_raises_error(self):
         memory = Memory()
@@ -106,19 +106,19 @@ class TestWrite(unittest.TestCase):
         memory = Memory()
         memory.memory["05"] = 42
         value = memory.write("05")
-        self.assertEqual(value, "0042")
+        self.assertEqual(value, "000042")
 
     def test_write_negative_value_formatted(self):
         memory = Memory()
         memory.memory["05"] = -42
         value = memory.write("05")
-        self.assertEqual(value, "-0042")
+        self.assertEqual(value, "-000042")
 
     def test_write_zero_formatted(self):
         memory = Memory()
         memory.memory["05"] = 0
         value = memory.write("05")
-        self.assertEqual(value, "0000")
+        self.assertEqual(value, "000000")
 
 
     def test_write_bad_address_raises_error(self):
@@ -278,13 +278,13 @@ class TestTruncationAc(unittest.TestCase):
     
     def test_truncation_outside_bounds_negative(self):
         mem = Memory()
-        mem.acumulator = -10042
+        mem.acumulator = -1000042
         mem.truncation_acc()
         self.assertEqual(mem.acumulator, -42)
 
     def test_truncation_outside_bounds_positive(self):
         mem = Memory()
-        mem.acumulator = 10042
+        mem.acumulator = 1000042
         mem.truncation_acc()
         self.assertEqual(mem.acumulator, 42)
     

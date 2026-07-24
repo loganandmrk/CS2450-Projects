@@ -15,7 +15,7 @@ The Gui consists of multiple different options for the user to select:
   > Once the file is loaded a confirmation message will appear in the output box. If no file is entered a message will appear.
 - The "Reset" button will clear the output box and then clear any memory and functions done as well as uploaded files. It will print a message when the system is successfully reset.
 - The "Run" button will begin the execution of the file loaded.
-- The "Change Theme" button will allow the user to first select a main color (default green) and then background color (default white).
+- The "Change Theme" button will allow the user to first select a primary color (default green) and then secondary color (default white).
 - The "Add/Edit Slot" button will allow the user to edit a selected word or instruction.
 - The "Delete" button will deleted the currently selected word or instruction.
 - The "Cut" button will delete the currently selected word or instruction and store it in the applications clipboard.
