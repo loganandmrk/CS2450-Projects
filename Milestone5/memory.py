@@ -1,4 +1,4 @@
-MEMORY_SIZE = 100
+MEMORY_SIZE = 250
 WORD_MIN = -999999
 WORD_MAX = 999999
  
@@ -84,8 +84,6 @@ def convert_4_digit_to_6_digit(text):
         return f"{sign}{text}"
 
     return f"{sign}0{text[:2]}0{text[2:]}"
- 
- 
 class Memory:
     def __init__(self):
         self.memory = {f"{i:02d}": None for i in range(MEMORY_SIZE)}

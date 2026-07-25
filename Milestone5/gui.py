@@ -270,13 +270,18 @@ class UVSimGUI:
             file_path = filedialog.askopenfilename(title="Select UVSim Program", filetypes=[("Text Files", "*.txt")])
             if file_path:
                 with open(file_path, 'r') as file:
-                    lines = file.read().splitlines()
+                    if file_path.endswith('.csv'):
+                        lines = []
+                        reader = csv.reader(file)
+                        for row in reader:
+                            if row:
+                                lines.append(row[1])
+                    else:
+                        lines = file.read().splitlines()
                 self._load_program_lines(lines)
                 self.log_output(f"Loaded {file_path}")
-        except ValueError:
-            self.log_output("Invalid file format. Please select a valid UVSim program.")
-        except IndexError:
-            self.log_output("File contains too long of instruction. Each instruction must be a sign and 6 digits long.")
+        except (IndexError, ValueError):
+            pass
         self.refresh_editor()
 
     def reset(self):
@@ -307,12 +312,14 @@ class UVSimGUI:
         file_path = filedialog.asksaveasfilename(title="Save UVSim Program", defaultextension=".txt", filetypes=[("Text Files", "*.txt")])
         if file_path:
             with open(file_path, 'w') as file:
+                writer = csv.writer(file)
                 for i in range(self.memory.memory_size):
-                    value = self.memory.read_inst(i)
-                    if isinstance(value, list):
-                        value = value[4]
-                    if describe_word(value) != "DATA" and value is not None:
-                        file.write(f"{value}\n")
+                    if self.memory.read_inst(f"{i:03d}") is not None and self.memory.read_inst(f"{i:03d}") >= 0:
+                        writer.writerow([f"{i:03d}", f"+{self.memory.read_inst(f"{i:03d}"):06d}"])
+                    elif self.memory.read_inst(f"{i:03d}") is not None and self.memory.read_inst(f"{i:03d}") < 0:
+                        writer.writerow([f"{i:03d}", f"-{self.memory.read_inst(f"{i:03d}"):06d}"])
+                    else:
+                        writer.writerow([f"{i:03d}", ""])
             self.log_output(f"Program saved to {file_path}")
 
     def run_program(self):

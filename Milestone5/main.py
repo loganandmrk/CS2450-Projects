@@ -1,11 +1,9 @@
 import sys
-from memory import Memory
 from gui import UVSimGUI
 import tkinter as tk
 #create base structure for the main class.
 def main():
     #Read file from command line and parse the input data and run a function to manipulate it
-    memory = Memory()
 
     root = tk.Tk()
     app = UVSimGUI(root)
