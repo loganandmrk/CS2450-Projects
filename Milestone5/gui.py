@@ -1,6 +1,7 @@
 from fileinput import filename
 from logging import root
 import sys
+import csv
 import tkinter as tk
 from tkinter import filedialog
 from tkinter import simpledialog
@@ -114,7 +115,7 @@ class UVSimGUI:
         )
         self.editor_tree.delete(*self.editor_tree.get_children())
         for i in range(self.memory.memory_size):
-            addr = f"{i:02d}"
+            addr = f"{i:03d}"
             value = self.memory.read_inst(addr)
             if isinstance(value, list):
                 value = value[4]
@@ -201,7 +202,7 @@ class UVSimGUI:
         start = int(selected[0])
         fits = min(len(self.clipboard), self.memory.memory_size - start)
         for offset in range(fits):
-            addr = f"{start + offset:02d}"
+            addr = f"{start + offset:03d}"
             self.memory.write_inst(addr, self.clipboard[offset])
         skipped = len(self.clipboard) - fits
         if skipped > 0:
@@ -267,10 +268,16 @@ class UVSimGUI:
 
     def load_file(self):
         try:
-            file_path = filedialog.askopenfilename(title="Select UVSim Program", filetypes=[("Text Files", "*.txt")])
+            file_path = filedialog.askopenfilename(title="Select UVSim Program", filetypes=[("Text Files", "*.txt"), ("CSV Files", "*.csv")])
             if file_path:
                 with open(file_path, 'r') as file:
-                    lines = file.read().splitlines()
+                    if file_path.endswith('.csv'):
+                        lines = []
+                        reader = csv.reader(file)
+                        for row in reader:
+                            lines.append(row[1])
+                    else:
+                        lines = file.read().splitlines()
                 self._load_program_lines(lines)
                 self.log_output(f"Loaded {file_path}")
         except ValueError:
@@ -304,15 +311,15 @@ class UVSimGUI:
             return None
 
     def save_file(self):
-        file_path = filedialog.asksaveasfilename(title="Save UVSim Program", defaultextension=".txt", filetypes=[("Text Files", "*.txt")])
+        file_path = filedialog.asksaveasfilename(title="Save UVSim Program", defaultextension=".csv", filetypes=[("CSV Files", "*.csv")])
         if file_path:
             with open(file_path, 'w') as file:
+                writer = csv.writer(file)
                 for i in range(self.memory.memory_size):
-                    value = self.memory.read_inst(i)
-                    if isinstance(value, list):
-                        value = value[4]
-                    if describe_word(value) != "DATA" and value is not None:
-                        file.write(f"{value}\n")
+                    try:
+                        writer.writerow([f"{i:03d}", f"{self.memory.read_inst(f"{i:03d}"):06d}"])
+                    except (ValueError, TypeError):
+                        writer.writerow([f"{i:03d}", ""])
             self.log_output(f"Program saved to {file_path}")
 
     def run_program(self):
@@ -324,7 +331,7 @@ class UVSimGUI:
             if isinstance(raw_value, list):
                 raw_value = int(raw_value[4])
             if raw_value is None:
-                self.log_output(f"Address {program_counter:02d} is empty. Halting.")
+                self.log_output(f"Address {program_counter:03d} is empty. Halting.")
                 break
             try:
                 opcode, operand = decode_instruction(raw_value)
@@ -433,7 +440,7 @@ class UVSimGUI:
 
                 case _:
                     self.log_output(
-                        f"Address {program_counter:02d} contains {format_word(raw_value)}, "
+                        f"Address {program_counter:03d} contains {format_word(raw_value)}, "
                         f"which is not a recognized instruction. Halting."
                     )
                     run = False
