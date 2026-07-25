@@ -1,7 +1,6 @@
 from fileinput import filename
 from logging import root
 import sys
-import csv
 import tkinter as tk
 from tkinter import filedialog
 from tkinter import simpledialog
@@ -115,7 +114,7 @@ class UVSimGUI:
         )
         self.editor_tree.delete(*self.editor_tree.get_children())
         for i in range(self.memory.memory_size):
-            addr = f"{i:03d}"
+            addr = f"{i:02d}"
             value = self.memory.read_inst(addr)
             if isinstance(value, list):
                 value = value[4]
@@ -202,7 +201,7 @@ class UVSimGUI:
         start = int(selected[0])
         fits = min(len(self.clipboard), self.memory.memory_size - start)
         for offset in range(fits):
-            addr = f"{start + offset:03d}"
+            addr = f"{start + offset:02d}"
             self.memory.write_inst(addr, self.clipboard[offset])
         skipped = len(self.clipboard) - fits
         if skipped > 0:
@@ -268,7 +267,7 @@ class UVSimGUI:
 
     def load_file(self):
         try:
-            file_path = filedialog.askopenfilename(title="Select UVSim Program", filetypes=[("Text Files", "*.txt"), ("CSV Files", "*.csv")])
+            file_path = filedialog.askopenfilename(title="Select UVSim Program", filetypes=[("Text Files", "*.txt")])
             if file_path:
                 with open(file_path, 'r') as file:
                     if file_path.endswith('.csv'):
@@ -310,7 +309,7 @@ class UVSimGUI:
             return None
 
     def save_file(self):
-        file_path = filedialog.asksaveasfilename(title="Save UVSim Program", defaultextension=".csv", filetypes=[("CSV Files", "*.csv")])
+        file_path = filedialog.asksaveasfilename(title="Save UVSim Program", defaultextension=".txt", filetypes=[("Text Files", "*.txt")])
         if file_path:
             with open(file_path, 'w') as file:
                 writer = csv.writer(file)
@@ -332,7 +331,7 @@ class UVSimGUI:
             if isinstance(raw_value, list):
                 raw_value = int(raw_value[4])
             if raw_value is None:
-                self.log_output(f"Address {program_counter:03d} is empty. Halting.")
+                self.log_output(f"Address {program_counter:02d} is empty. Halting.")
                 break
             try:
                 opcode, operand = decode_instruction(raw_value)
@@ -441,7 +440,7 @@ class UVSimGUI:
 
                 case _:
                     self.log_output(
-                        f"Address {program_counter:03d} contains {format_word(raw_value)}, "
+                        f"Address {program_counter:02d} contains {format_word(raw_value)}, "
                         f"which is not a recognized instruction. Halting."
                     )
                     run = False
