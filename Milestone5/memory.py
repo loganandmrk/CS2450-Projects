@@ -29,7 +29,7 @@ def decode_instruction(value):
     else:
         opcode = magnitude // 100
         operand = magnitude % 100
-    return opcode, f"{operand:02d}"
+    return opcode, f"{operand:03d}"
  
  
 def describe_word(value):
@@ -84,9 +84,10 @@ def convert_4_digit_to_6_digit(text):
         return f"{sign}{text}"
 
     return f"{sign}0{text[:2]}0{text[2:]}"
+
 class Memory:
     def __init__(self):
-        self.memory = {f"{i:02d}": None for i in range(MEMORY_SIZE)}
+        self.memory = {f"{i:03d}": None for i in range(MEMORY_SIZE)}
         self.acumulator = 0
         self.memory_size = MEMORY_SIZE
         self.word_min = WORD_MIN
@@ -99,7 +100,7 @@ class Memory:
     @staticmethod
     def _address_key(address):
         if isinstance(address, int):
-            return f"{address:02d}"
+            return f"{address:03d}"
         return address
  
     def value_finder(self, address):

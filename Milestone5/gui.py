@@ -1,6 +1,7 @@
 from fileinput import filename
 from logging import root
 import sys
+import csv
 import tkinter as tk
 from tkinter import filedialog
 from tkinter import simpledialog
@@ -114,7 +115,7 @@ class UVSimGUI:
         )
         self.editor_tree.delete(*self.editor_tree.get_children())
         for i in range(self.memory.memory_size):
-            addr = f"{i:02d}"
+            addr = f"{i:03d}"
             value = self.memory.read_inst(addr)
             if isinstance(value, list):
                 value = value[4]
@@ -267,7 +268,7 @@ class UVSimGUI:
 
     def load_file(self):
         try:
-            file_path = filedialog.askopenfilename(title="Select UVSim Program", filetypes=[("Text Files", "*.txt")])
+            file_path = filedialog.askopenfilename(title="Select UVSim Program", filetypes=[("Text Files", "*.txt"), ("CSV Files", "*.csv")])
             if file_path:
                 with open(file_path, 'r') as file:
                     if file_path.endswith('.csv'):
@@ -309,7 +310,7 @@ class UVSimGUI:
             return None
 
     def save_file(self):
-        file_path = filedialog.asksaveasfilename(title="Save UVSim Program", defaultextension=".txt", filetypes=[("Text Files", "*.txt")])
+        file_path = filedialog.asksaveasfilename(title="Save UVSim Program", defaultextension=".csv", filetypes=[("CSV Files", "*.csv")])
         if file_path:
             with open(file_path, 'w') as file:
                 writer = csv.writer(file)
