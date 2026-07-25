@@ -1,7 +1,7 @@
-MEMORY_SIZE = 100
-WORD_MIN = -9999
-WORD_MAX = 9999
-
+MEMORY_SIZE = 250
+WORD_MIN = -999999
+WORD_MAX = 999999
+ 
 INSTRUCTION_MNEMONICS = {
     10: "READ",
     11: "WRITE",
@@ -16,8 +16,8 @@ INSTRUCTION_MNEMONICS = {
     42: "BRANCHZERO",
     43: "HALT",
 }
-
-
+ 
+ 
 def decode_instruction(value):
     magnitude = abs(int(value))
     if magnitude >= 100000:
@@ -41,13 +41,13 @@ def describe_word(value):
     if opcode in INSTRUCTION_MNEMONICS:
         return f"{INSTRUCTION_MNEMONICS[opcode]} {operand}"
     return "DATA"
-
-
+ 
+ 
 def format_word(value):
     sign = "-" if value < 0 else "+"
-    return f"{sign}{abs(value):04d}"
-
-
+    return f"{sign}{abs(value):06d}"
+ 
+ 
 def parse_word(text):
     text = text.strip()
     try:
@@ -59,6 +59,32 @@ def parse_word(text):
     return value
 
 
+def convert_4_digit_to_6_digit(text):
+    text = text.strip()
+    sign = ""
+    if text.startswith("+"):
+        text = text[1:]
+    elif text.startswith("-"):
+        sign = "-"
+        text = text[1:]
+
+    if len(text) != 4 or not text.isdigit():
+        return f"{sign}{text}"
+
+    opcode = int(text[:2])
+    operand = int(text[2:])
+
+    if opcode not in INSTRUCTION_MNEMONICS:
+        return f"{sign}{text}"
+
+    if operand < 0 or operand > 99:
+        return f"{sign}{text}"
+
+    if text[:2] == text[2:]:
+        return f"{sign}{text}"
+
+    return f"{sign}0{text[:2]}0{text[2:]}"
+
 class Memory:
     def __init__(self):
         self.memory = {f"{i:03d}": None for i in range(MEMORY_SIZE)}
@@ -66,36 +92,36 @@ class Memory:
         self.memory_size = MEMORY_SIZE
         self.word_min = WORD_MIN
         self.word_max = WORD_MAX
-
+ 
     def _validate_address(self, address):
         if int(address) < 0 or int(address) >= self.memory_size:
             raise ValueError("Address " + str(address) + " is not valid")
-
+ 
     @staticmethod
     def _address_key(address):
         if isinstance(address, int):
             return f"{address:03d}"
         return address
-
+ 
     def value_finder(self, address):
         return self.memory[address]
-
+ 
     def truncation_acc(self):
         value = self.acumulator
         if value > self.word_max or value < self.word_min:
             if value < 0:
-                value %= -10000
+                value %= -1000000
             if value > 0:
-                value %= 10000
+                value %= 1000000
         self.acumulator = value
         return self.acumulator
-
+ 
     def write_inst(self, address, value):
         self.memory[self._address_key(address)] = value
-
+ 
     def read_inst(self, address):
         return self.memory[self._address_key(address)]
-
+ 
     def read(self, address, user_input):
         self._validate_address(address)
         try:
@@ -105,30 +131,30 @@ class Memory:
         if value < self.word_min or value > self.word_max:
             raise OverflowError
         self.memory[address] = value
-
+ 
     def write(self, address):
         self._validate_address(address)
         value = self.value_finder(address)
         if value is None:
             raise ValueError("Memory location " + str(address) + " is empty")
         if value < 0:
-            return "-" + str(abs(value)).zfill(4)
+            return "-" + str(abs(value)).zfill(6)
         else:
-            return str(value).zfill(4)
-
+            return str(value).zfill(6)
+ 
     def load(self, address):
         self._validate_address(address)
         value = self.value_finder(address)
         if value is None:
             raise ValueError("Memory location " + str(address) + " is empty")
         self.acumulator = value
-
+ 
     def store(self, address):
         self._validate_address(address)
         if self.acumulator < self.word_min or self.acumulator > self.word_max:
             raise OverflowError("Accumulator value is out of range")
         self.memory[address] = self.acumulator
-
+ 
     def add(self, address):
         self._validate_address(address)
         value = self.value_finder(address)
@@ -136,7 +162,7 @@ class Memory:
             raise ValueError("Memory location " + str(address) + " is empty")
         self.acumulator = self.acumulator + value
         self.truncation_acc()
-
+ 
     def subtract(self, address):
         self._validate_address(address)
         value = self.value_finder(address)
@@ -144,7 +170,7 @@ class Memory:
             raise ValueError("Memory location " + str(address) + " is empty")
         self.acumulator = self.acumulator - value
         self.truncation_acc()
-
+ 
     def multiply(self, address):
         self._validate_address(address)
         value = self.value_finder(address)
@@ -152,7 +178,7 @@ class Memory:
             raise ValueError("Memory location " + str(address) + " is empty")
         self.acumulator = self.acumulator * value
         self.truncation_acc()
-
+ 
     def divide(self, address):
         self._validate_address(address)
         value = self.value_finder(address)
