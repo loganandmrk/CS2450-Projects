@@ -20,18 +20,11 @@ INSTRUCTION_MNEMONICS = {
 
 def decode_instruction(value):
     magnitude = abs(int(value))
-    if magnitude >= 100000:
-        opcode = magnitude // 10000
-        operand = magnitude % 10000
-    elif magnitude >= 10000:
-        opcode = magnitude // 1000
-        operand = magnitude % 1000
-    else:
-        opcode = magnitude // 100
-        operand = magnitude % 100
-    return opcode, f"{operand:03d}"
- 
- 
+    opcode = magnitude // 100
+    operand = magnitude % 100
+    return opcode, f"{operand:02d}"
+
+
 def describe_word(value):
     if value is None:
         return "(empty)"
@@ -61,7 +54,7 @@ def parse_word(text):
 
 class Memory:
     def __init__(self):
-        self.memory = {f"{i:03d}": None for i in range(MEMORY_SIZE)}
+        self.memory = {f"{i:02d}": None for i in range(MEMORY_SIZE)}
         self.acumulator = 0
         self.memory_size = MEMORY_SIZE
         self.word_min = WORD_MIN
@@ -74,7 +67,7 @@ class Memory:
     @staticmethod
     def _address_key(address):
         if isinstance(address, int):
-            return f"{address:03d}"
+            return f"{address:02d}"
         return address
 
     def value_finder(self, address):
