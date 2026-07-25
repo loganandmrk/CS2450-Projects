@@ -76,7 +76,11 @@ class UVSimTab:
 
         columns = ("address", "value", "meaning")
         self.editor_tree = ttk.Treeview(
-            parent, columns=columns, show="headings", selectmode="extended"
+            parent,
+            columns=columns,
+            show="headings",
+            selectmode="extended",
+            style="UVSim.Treeview",
         )
         self.editor_tree.heading("address", text="Address")
         self.editor_tree.heading("value", text="Value")
@@ -481,15 +485,15 @@ class UVSimGUI:
         self.btn_theme = tk.Button(toolbar, text="Change Theme", command=self.change_colors)
         self.btn_theme.pack(side=tk.LEFT, padx=10, pady=5)
 
-        self.notebook = ttk.Notebook(root)
-        self.notebook.pack(fill=tk.BOTH, expand=True)
-
         self.default_primary = "#4C721D"
         self.default_secondary = "#FFFFFF"
         self._theme = (self.default_primary, self.default_secondary)
+        self.configure_styles(*self._theme)
+
+        self.notebook = ttk.Notebook(root, style="UVSim.TNotebook")
+        self.notebook.pack(fill=tk.BOTH, expand=True)
 
         self.new_blank_tab()
-        self.apply_theme(self.default_primary, self.default_secondary)
 
     # ------------------------------------------------------------------
     # tab management
@@ -508,7 +512,8 @@ class UVSimGUI:
         self.tabs[str(frame)] = tab
         tab._sync_tab_label()
         self.notebook.select(frame)
-        self.apply_theme(self.default_primary, self.default_secondary)
+        self.root.update_idletasks()
+        self.root.after_idle(self.change_theme)
         return tab
 
     def new_blank_tab(self):
@@ -549,15 +554,68 @@ class UVSimGUI:
 
         self.apply_theme(primary_color, secondary_color)
 
+    def change_theme(self):
+        self.apply_theme(*self._theme)
+
+
+    def configure_styles(self, primary_color, secondary_color):
+        style = ttk.Style(self.root)
+        try:
+            if "clam" in style.theme_names():
+                style.theme_use("clam")
+            else:
+                style.theme_use(style.theme_use())
+        except tk.TclError:
+            pass
+
+        style.configure(
+            "UVSim.Treeview",
+            background=secondary_color,
+            fieldbackground=secondary_color,
+            foreground=primary_color,
+            rowheight=24,
+        )
+        style.configure(
+            "UVSim.Treeview.Heading",
+            background=primary_color,
+            foreground=secondary_color,
+            relief="flat",
+            borderwidth=0,
+        )
+        style.map(
+            "UVSim.Treeview",
+            background=[("selected", primary_color)],
+            foreground=[("selected", secondary_color)],
+        )
+
+        style.configure(
+            "UVSim.TNotebook",
+            background=secondary_color,
+            borderwidth=0,
+        )
+        style.configure(
+            "UVSim.TNotebook.Tab",
+            background=primary_color,
+            foreground=secondary_color,
+            padding=(10, 5),
+        )
+        style.map(
+            "UVSim.TNotebook.Tab",
+            background=[("selected", secondary_color), ("active", primary_color)],
+            foreground=[("selected", primary_color), ("active", secondary_color)],
+        )
+
     def apply_theme(self, primary_color, secondary_color):
         self._theme = (primary_color, secondary_color)
         self.root.configure(bg=primary_color)
+        self.configure_styles(primary_color, secondary_color)
+        self.root.update_idletasks()
 
         def apply_to_widget(widget):
             if isinstance(widget, tk.Button):
                 widget.configure(
                     bg=secondary_color,
-                    fg="#000000",
+                    fg=primary_color,
                     activebackground=primary_color,
                     activeforeground=secondary_color,
                 )
@@ -569,6 +627,10 @@ class UVSimGUI:
                 widget.configure(bg=secondary_color)
             elif isinstance(widget, tk.Frame):
                 widget.configure(bg=secondary_color)
+            elif isinstance(widget, ttk.Treeview):
+                widget.configure(style="UVSim.Treeview")
+            elif isinstance(widget, ttk.Notebook):
+                widget.configure(style="UVSim.TNotebook")
 
             for child in widget.winfo_children():
                 apply_to_widget(child)
