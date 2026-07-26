@@ -11,44 +11,46 @@ from memory import Memory
 from pathlib import Path
 from memory import Memory, decode_instruction, describe_word, format_word, parse_word, convert_4_digit_to_6_digit
 
-class UVSimGUI:
-    def __init__(self, root):
-        self.root = root
-        self.root.title("UVSim Emulator")
-        self.root.state("zoomed")
+class UVSimTab(ttk.Frame):
+    def __init__(self, parent, app):
 
         #initalization of Memory Class and Program Counter
+        super().__init__(parent)
+        self.app = app
         self.memory = Memory()
         self.program_counter = 0
+        self.main_tab = ttk.Frame(self)
+        self.main_tab.pack(fill=tk.BOTH, expand=True)
 
         #Configure GUI Layout
-        root.grid_columnconfigure(0, weight=1)
-        root.grid_columnconfigure(1, weight=1)
-        root.grid_columnconfigure(2, weight=1)
-        root.grid_columnconfigure(3, weight=1)
-        root.grid_rowconfigure(0, weight=0)
-        root.grid_rowconfigure(1, weight=0)
-        root.grid_rowconfigure(2, weight=0)
-        root.grid_rowconfigure(3, weight=1)
-        root.grid_rowconfigure(4, weight=0)
+        self.main_tab.grid_columnconfigure(0, weight=1)
+        self.main_tab.grid_columnconfigure(1, weight=1)
+        self.main_tab.grid_columnconfigure(2, weight=1)
+        self.main_tab.grid_columnconfigure(3, weight=1)
+        self.main_tab.grid_rowconfigure(0, weight=0)
+        self.main_tab.grid_rowconfigure(1, weight=0)
+        self.main_tab.grid_rowconfigure(2, weight=0)
+        self.main_tab.grid_rowconfigure(3, weight=1)
+        self.main_tab.grid_rowconfigure(4, weight=0)
 
         #Buttons
-        self.btn_load = tk.Button(root, text="Load File", command=self.load_file)
+
+        self.btn_load = tk.Button(self.main_tab, text="Load File", command=self.load_file)
         self.btn_load.grid(row=0, column=0, padx=50, pady=25, sticky=tk.NSEW)
 
-        self.btn_run = tk.Button(root, text="Run", command=self.run_program)
+        self.btn_run = tk.Button(self.main_tab, text="Run", command=self.run_program)
         self.btn_run.grid(row=0, column=2, padx=50, pady=25, sticky=tk.NSEW)
 
-        self.btn_edit = tk.Button(root, text="Add / Edit Slot", command=self.edit_selected_slot)
+        self.btn_edit = tk.Button(self.main_tab, text="Add / Edit Slot", command=self.edit_selected_slot)
         self.btn_edit.grid(row=1, column=0, padx=50, pady=25, sticky=tk.NSEW)
  
-        self.btn_delete = tk.Button(root, text="Delete", command=self.delete_selected_slots)
+        self.btn_delete = tk.Button(self.main_tab, text="Delete", command=self.delete_selected_slots)
         self.btn_delete.grid(row=1, column=1, padx=50, pady=25, sticky=tk.NSEW)
 
-        self.btn_reset = tk.Button(root, text="Reset", command=self.reset)
+        self.btn_reset = tk.Button(self.main_tab, text="Reset", command=self.reset)
         self.btn_reset.grid(row=0, column=1, padx=50, pady=25, sticky=tk.NSEW)
 
-        editor_btn_frame = tk.Frame(root)
+        editor_btn_frame = ttk.Frame(self.main_tab)
         editor_btn_frame.grid(row=1, column=2, padx=50, pady=25, sticky=tk.NSEW)
         self.btn_cut = tk.Button(editor_btn_frame, text="Cut", command=self.cut_selected_slots)
         self.btn_cut.pack(side=tk.LEFT, expand=True, fill=tk.X)
@@ -57,14 +59,14 @@ class UVSimGUI:
         self.btn_paste = tk.Button(editor_btn_frame, text="Paste", command=self.paste_into_selected_slot)
         self.btn_paste.pack(side=tk.LEFT, expand=True, fill=tk.X)
 
-        save_btn_frame = tk.Frame(root)
+        save_btn_frame = ttk.Frame(self.main_tab)
         save_btn_frame.grid(row=1, column=3, padx=50, pady=25, sticky=tk.NSEW)
         self.btn_save = tk.Button(save_btn_frame, text="Save", command=self.save_file)
         self.btn_save.pack(side=tk.LEFT, expand=True, fill=tk.X)
 
         columns = ("address", "value", "meaning")
         self.editor_tree = ttk.Treeview(
-            root, columns=columns, show="headings", selectmode="extended"
+            self.main_tab, columns=columns, show="headings", selectmode="extended"
         )
         self.editor_tree.heading("address", text="Address")
         self.editor_tree.heading("value", text="Value")
@@ -74,7 +76,7 @@ class UVSimGUI:
         self.editor_tree.column("meaning", width=260, anchor=tk.W)
         self.editor_tree.grid(row=3, column=0, columnspan=3, padx=(5, 0), pady=5, sticky=tk.NSEW)
  
-        editor_scrollbar = tk.Scrollbar(root, orient="vertical", command=self.editor_tree.yview)
+        editor_scrollbar = tk.Scrollbar(self.main_tab, orient="vertical", command=self.editor_tree.yview)
         self.editor_tree.configure(yscrollcommand=editor_scrollbar.set)
         editor_scrollbar.grid(row=3, column=3, pady=5, sticky=tk.NS)
  
@@ -88,25 +90,22 @@ class UVSimGUI:
         for seq in ("<Control-v>", "<Command-v>"):
             self.editor_tree.bind(seq, lambda event: self.paste_into_selected_slot())
  
-        tk.Label(
-            root,
+        ttk.Label(
+            self.main_tab,
             text="Memory will show up here. Double-click a row to add/edit it. Select rows for Cut/Copy/Paste/Delete.",
-            fg="gray",
+            foreground="gray",
         ).grid(row=2, column=0, columnspan=4, padx=5, sticky=tk.W)
  
-        tk.Label(root, text="Output:").grid(row=4, column=0, padx=5, pady=2, sticky=tk.W)
-        self.output_text = tk.Text(root, height=10, width=50)
+        ttk.Label(self.main_tab, text="Output:").grid(row=4, column=0, padx=5, pady=2, sticky=tk.W)
+        self.output_text = tk.Text(self.main_tab, height=10, width=50)
         self.output_text.grid(row=5, column=0, columnspan=4, padx=5, pady=5, sticky=tk.NSEW)
  
         self.refresh_editor()
 
-        self.btn_reset = tk.Button(root, text="Change Theme", command=self.change_colors)
+        self.btn_reset = tk.Button(self.main_tab, text="Change Theme", command=self.change_colors)
         self.btn_reset.grid(row=0, column=3, padx=50, pady=25, sticky=tk.NSEW)
 
         #Final Set-up
-        default_primary = "#4C721D"
-        default_secondary = "#FFFFFF"
-        self.apply_theme(default_primary, default_secondary)
         self.log_output("Welcome to UVSim Emulator! Please load a program to begin.")
 
     def refresh_editor(self, keep_selection=None):
@@ -231,30 +230,10 @@ class UVSimGUI:
         self.apply_theme(primary_color, secondary_color)
 
     def apply_theme(self, primary_color, secondary_color):
-        self.root.configure(bg=primary_color)
-
-        def apply_to_widget(widget):
-            if isinstance(widget, tk.Button):
-                widget.configure(
-                    bg=secondary_color,
-                    fg="#000000",
-                    activebackground=primary_color,
-                    activeforeground=secondary_color,
-                )
-            elif isinstance(widget, tk.Label):
-                widget.configure(bg=secondary_color, fg=primary_color)
-            elif isinstance(widget, tk.Text):
-                widget.configure(bg=secondary_color, fg=primary_color, insertbackground=primary_color)
-            elif isinstance(widget, tk.Scrollbar):
-                widget.configure(bg=secondary_color)
-            elif isinstance(widget, tk.Frame):
-                widget.configure(bg=secondary_color)
-
-            for child in widget.winfo_children():
-                apply_to_widget(child)
-
-        for widget in self.root.winfo_children():
-            apply_to_widget(widget)
+        style = ttk.Style()
+        style.configure("Custom.TNotebook", background=primary_color, foreground=secondary_color)
+        style.configure("Custom.TNotebook.Tab", background=primary_color, foreground=secondary_color)
+        style.map("Custom.TNotebook.Tab", background=[("selected", secondary_color)], foreground=[("selected", primary_color)])
 
     def _load_program_lines(self, lines):
         self.memory = Memory()
@@ -296,10 +275,10 @@ class UVSimGUI:
     def log_output(self, msg):
         self.output_text.insert(tk.END, msg + "\n")
         self.output_text.see(tk.END)
-        self.root.update_idletasks()
+        self.main_tab.update_idletasks()
 
     def submit_input(self):
-        user_input = simpledialog.askstring("Input", "Please enter an integer:", parent=self.root)
+        user_input = simpledialog.askstring("Input", "Please enter an integer:", parent=self.main_tab)
         if user_input is None:
             self.log_output("Input cancelled. Please restart the program and enter a valid integer.")
             return None
@@ -448,3 +427,45 @@ class UVSimGUI:
                     break
             program_counter += 1
         self.refresh_editor()
+
+class UVSimGUI:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("UVSim Emulator")
+        self.root.state("zoomed")
+
+        self.default_primary = "#4C721D"
+        self.default_secondary = "#FFFFFF"
+        style = ttk.Style()
+        style.theme_use("clam")
+        style.configure("Custom.TNotebook", background=self.default_primary)
+        style.configure("Custom.TNotebook.Tab", background=self.default_primary, foreground=self.default_secondary)
+        style.map("Custom.TNotebook.Tab", background=[("selected", self.default_secondary)], foreground=[("selected", self.default_primary)])
+
+        self.notebook = ttk.Notebook(self.root, style="Custom.TNotebook")
+        self.notebook.configure(style="Custom.TNotebook")
+        self.notebook.grid(row=0, rowspan=4, column=0, columnspan=4, padx=5, pady=5, sticky=tk.NSEW)
+
+        self.tab_counter = 1
+        self.main_tab = UVSimTab(self.notebook, self)
+        self.notebook.add(self.main_tab, text="UVSim Emulator")
+
+        #Configure GUI Layout
+        self.root.grid_columnconfigure(0, weight=1)
+        self.root.grid_rowconfigure(0, weight=1)
+
+        self.plus_tab = ttk.Frame(self.notebook)
+        self.notebook.add(self.plus_tab, text=" + ")
+        self.notebook.bind("<<NotebookTabChanged>>", self.on_tab_changed)
+
+    def add_new_tab(self):
+        new_tab = UVSimTab(self.notebook, self)
+        index = max(0, len(self.notebook.tabs())-1)
+        self.notebook.insert(index, new_tab, text=f"New Tab {self.tab_counter}")
+        self.notebook.select(new_tab)
+        self.tab_counter += 1
+
+    def on_tab_changed(self, event):
+        selected_tab = event.widget.select()
+        if selected_tab == str(self.plus_tab):
+            self.add_new_tab()
